@@ -11,14 +11,13 @@ import logging
 import math
 
 from openai import AzureOpenAI
-from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
+from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential_jitter
 
 from ..config import Settings
 from ..logging_setup import log_event
 
 logger = logging.getLogger(__name__)
 
-# Conservative character cap per input; text-embedding-3 accepts 8191 tokens.
 _MAX_CHARS = 24000
 
 
@@ -38,7 +37,7 @@ class EmbeddingService:
 
     @retry(
         retry=retry_if_exception(_is_transient),
-        wait=wait_exponential(multiplier=2, max=60),
+        wait=wait_exponential_jitter(initial=1, max=10),
         stop=stop_after_attempt(5),
         reraise=True,
     )
@@ -60,7 +59,7 @@ class EmbeddingService:
     def embed_one(self, text: str) -> list[float]:
         return self._embed_batch([text])[0]
 
-
+# Manual reranking signal, can be replaced by semantic reranker with a higher tier
 def cosine_similarity(a: list[float], b: list[float]) -> float:
     dot = sum(x * y for x, y in zip(a, b))
     norm = math.sqrt(sum(x * x for x in a)) * math.sqrt(sum(y * y for y in b))
