@@ -52,6 +52,7 @@ def test_withdrawn_controls_are_excluded():
 def test_search_safe_ids():
     enhancement = {**SYNTHETIC_CONTROL, "id": "xx-1.2"}
     record = control_to_record(enhancement, family="F", parent_title="Parent")
+    assert record is not None
     assert record.id == "xx-1_2"
     assert record.title.startswith("Parent — ")
 

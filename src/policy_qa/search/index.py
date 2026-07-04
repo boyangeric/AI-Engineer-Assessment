@@ -10,7 +10,6 @@ from azure.search.documents.indexes.models import (
     HnswAlgorithmConfiguration,
     SearchableField,
     SearchField,
-    SearchFieldDataType,
     SearchIndex,
     SemanticConfiguration,
     SemanticField,
@@ -32,17 +31,17 @@ SEMANTIC_CONFIG = "semantic-default"
 
 def build_index(settings: Settings) -> SearchIndex:
     fields = [
-        SimpleField(name="id", type=SearchFieldDataType.String, key=True),
-        SearchableField(name="control_id", type=SearchFieldDataType.String, filterable=True),
-        SearchableField(name="title", type=SearchFieldDataType.String),
-        SearchableField(name="description", type=SearchFieldDataType.String),
+        SimpleField(name="id", type="Edm.String", key=True),
+        SearchableField(name="control_id", type="Edm.String", filterable=True),
+        SearchableField(name="title", type="Edm.String"),
+        SearchableField(name="description", type="Edm.String"),
         SearchableField(
-            name="category", type=SearchFieldDataType.String, filterable=True, facetable=True
+            name="category", type="Edm.String", filterable=True, facetable=True
         ),
-        SimpleField(name="source", type=SearchFieldDataType.String, filterable=True),
+        SimpleField(name="source", type="Edm.String", filterable=True),
         SearchField(
             name="content_vector",
-            type=SearchFieldDataType.Collection(SearchFieldDataType.Single),
+            type="Collection(Edm.Single)",
             searchable=True,
             # Retrievable so the client can compute query<->doc cosine similarity
             # as an absolute relevance gate (RRF scores are only rank fusion).
