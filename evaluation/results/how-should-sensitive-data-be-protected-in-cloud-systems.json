@@ -1,0 +1,129 @@
+{
+  "query": "How should sensitive data be protected in cloud systems?",
+  "expect_fallback": false,
+  "trace": {
+    "question": "How should sensitive data be protected in cloud systems?",
+    "correlation_id": "72f25ebde242",
+    "plan": {
+      "original_query": "How should sensitive data be protected in cloud systems?",
+      "interpretation": "Find NIST SP 800-53 Rev 5 security controls and guidance that address protecting sensitive data in cloud environments, including encryption, key management, access controls, data handling, and responsibilities with cloud providers and monitoring.",
+      "steps": [
+        {
+          "step_id": 1,
+          "search_query": "encryption data at rest in transit key management cryptographic mechanisms",
+          "rationale": "Retrieve controls that mandate or guide use of cryptography and key management to protect sensitive data both at rest and in transit."
+        },
+        {
+          "step_id": 2,
+          "search_query": "access control least privilege separation of duties identification authentication data labeling handling media protection sanitization",
+          "rationale": "Find controls addressing who may access sensitive data, how access is authorized and logged, and how data is classified, handled, and sanitized throughout its lifecycle."
+        },
+        {
+          "step_id": 3,
+          "search_query": "cloud service provider shared responsibility contracts external system services supply chain audit logging continuous monitoring",
+          "rationale": "Locate controls about responsibilities and contractual requirements with external/cloud service providers plus logging, monitoring, and supply-chain considerations for cloud-hosted sensitive data."
+        }
+      ]
+    },
+    "retrieval": {
+      "plan": {
+        "original_query": "How should sensitive data be protected in cloud systems?",
+        "interpretation": "Find NIST SP 800-53 Rev 5 security controls and guidance that address protecting sensitive data in cloud environments, including encryption, key management, access controls, data handling, and responsibilities with cloud providers and monitoring.",
+        "steps": [
+          {
+            "step_id": 1,
+            "search_query": "encryption data at rest in transit key management cryptographic mechanisms",
+            "rationale": "Retrieve controls that mandate or guide use of cryptography and key management to protect sensitive data both at rest and in transit."
+          },
+          {
+            "step_id": 2,
+            "search_query": "access control least privilege separation of duties identification authentication data labeling handling media protection sanitization",
+            "rationale": "Find controls addressing who may access sensitive data, how access is authorized and logged, and how data is classified, handled, and sanitized throughout its lifecycle."
+          },
+          {
+            "step_id": 3,
+            "search_query": "cloud service provider shared responsibility contracts external system services supply chain audit logging continuous monitoring",
+            "rationale": "Locate controls about responsibilities and contractual requirements with external/cloud service providers plus logging, monitoring, and supply-chain considerations for cloud-hosted sensitive data."
+          }
+        ]
+      },
+      "documents": [
+        {
+          "id": "mp-6_7",
+          "control_id": "MP-6(7)",
+          "title": "Media Sanitization — Dual Authorization",
+          "category": "Media Protection",
+          "content": "Enforce dual authorization for the sanitization of [Assignment: system media].\n\nDiscussion: Organizations employ dual authorization to help ensure that system media sanitization cannot occur unless two technically qualified individuals conduct the designated task. Individuals who sanitize system media possess sufficient skills and expertise to determine if the proposed sanitization reflects applicable federal and organizational standards, policies, and procedures. Dual authorization also helps to ensure that sanitization occurs as intended, protecting against errors and false claims of having performed the sanitization actions. Dual authorization may also be known as two-person control. To reduce the risk of collusion, organizations consider rotating dual authorization duties to other individuals.",
+          "score": 0.03306011110544205,
+          "similarity": 0.6127,
+          "reranker_score": null
+        },
+        {
+          "id": "mp-6",
+          "control_id": "MP-6",
+          "title": "Media Sanitization",
+          "category": "Media Protection",
+          "content": "a. Sanitize [Assignment: organization-defined system media] prior to disposal, release out of organizational control, or release for reuse using [Assignment: organization-defined sanitization techniques and procedures] ; and\nb. Employ sanitization mechanisms with the strength and integrity commensurate with the security category or classification of the information.\n\nDiscussion: Media sanitization applies to all digital and non-digital system media subject to disposal or reuse, whether or not the media is considered removable. Examples include digital media in scanners, copiers, printers, notebook computers, workstations, network components, mobile devices, and non-digital media (e.g., paper and microfilm). The sanitization process removes information from system media such that the information cannot be retrieved or reconstructed. Sanitization techniques—including clearing, purging, cryptographic erase, de-identification of personally identifiable information, and destruction—prevent the disclosure of information to unauthorized individuals when such media is reused or released for disposal. Organizations determine the appropriate sanitization methods, recognizing that destruction is sometimes necessary when other methods cannot be applied to media requiring sanitization. Organizations use discretion on the employment of approved sanitization techniques and procedures for media that contains information deemed to be in the public domain or publicly releasable or information deemed to have no adverse impact on organizations or individuals if released for reuse or disposal. Sanitization of non-digital media includes destruction, removing a classified appendix from an otherwise unclassified document, or redacting selected sections or words from a document by obscuring the redacted sections or words in a manner equivalent in effectiveness to removing them from the document. NSA standards and policies control the sanitization process for media that contains classified information. NARA policies control the sanitization process for controlled unclassified information.",
+          "score": 0.032522473484277725,
+          "similarity": 0.6054,
+          "reranker_score": null
+        },
+        {
+          "id": "ac-4_25",
+          "control_id": "AC-4(25)",
+          "title": "Information Flow Enforcement — Data Sanitization",
+          "category": "Access Control",
+          "content": "When transferring information between different security domains, sanitize data to minimize [Assignment: selection: delivery of malicious content, command and control of malicious code, malicious code augmentation, and steganography-encoded data; spillage of sensitive information] in accordance with [Assignment: policy].\n\nDiscussion: Data sanitization is the process of irreversibly removing or destroying data stored on a memory device (e.g., hard drives, flash memory/solid state drives, mobile devices, CDs, and DVDs) or in hard copy form.",
+          "score": 0.03079839050769806,
+          "similarity": 0.5934,
+          "reranker_score": null
+        },
+        {
+          "id": "ac-5",
+          "control_id": "AC-5",
+          "title": "Separation of Duties",
+          "category": "Access Control",
+          "content": "a. Identify and document [Assignment: duties of individuals] ; and\nb. Define system access authorizations to support separation of duties.\n\nDiscussion: Separation of duties addresses the potential for abuse of authorized privileges and helps to reduce the risk of malevolent activity without collusion. Separation of duties includes dividing mission or business functions and support functions among different individuals or roles, conducting system support functions with different individuals, and ensuring that security personnel who administer access control functions do not also administer audit functions. Because separation of duty violations can span systems and application domains, organizations consider the entirety of systems and system components when developing policy on separation of duties. Separation of duties is enforced through the account management activities in [AC-2](#ac-2) , access control mechanisms in [AC-3](#ac-3) , and identity management activities in [IA-2](#ia-2), [IA-4](#ia-4) , and [IA-12](#ia-12).",
+          "score": 0.03229166567325592,
+          "similarity": 0.59,
+          "reranker_score": null
+        },
+        {
+          "id": "sc-28_1",
+          "control_id": "SC-28(1)",
+          "title": "Protection of Information at Rest — Cryptographic Protection",
+          "category": "System and Communications Protection",
+          "content": "Implement cryptographic mechanisms to prevent unauthorized disclosure and modification of the following information at rest on [Assignment: system components or media]: [Assignment: information].\n\nDiscussion: The selection of cryptographic mechanisms is based on the need to protect the confidentiality and integrity of organizational information. The strength of mechanism is commensurate with the security category or classification of the information. Organizations have the flexibility to encrypt information on system components or media or encrypt data structures, including files, records, or fields.",
+          "score": 0.03306011110544205,
+          "similarity": 0.5783,
+          "reranker_score": null
+        }
+      ],
+      "has_relevant_results": true
+    },
+    "answer": {
+      "answer": "Concise guidance based only on the provided controls:\n\n- Protect stored (at‑rest) sensitive data with cryptography: implement cryptographic mechanisms sized to the information’s security category/classification to prevent unauthorized disclosure or modification of data at rest on system components or media (SC-28(1)).\n\n- Sanitize media before disposal, reuse, or release: sanitize organization‑defined system media using organization‑defined techniques (e.g., clearing, purging, cryptographic erase, de‑identification, destruction) and employ sanitization mechanisms whose strength and integrity are commensurate with the information’s classification (MP-6). Sanitation applies to digital and non‑digital media (e.g., printers, network components, mobile devices, paper) (MP-6).\n\n- Enforce sanitation when transferring across domains: when transferring information between security domains, sanitize data to minimize delivery of malicious content and spillage of sensitive information in accordance with policy (AC-4(25)).\n\n- Use dual authorization for sanitization actions when appropriate: require two technically qualified individuals to perform system media sanitization to reduce errors, false claims, and collusion (MP-6(7)).\n\n- Enforce separation of duties for access and sanitization processes: identify and document duties and define access authorizations to reduce abuse of privileges and collusion (AC-5).\n\nThese measures should be applied consistent with organization policies and the information’s security classification. ",
+      "citations": [
+        "SC-28(1)",
+        "MP-6",
+        "MP-6(7)",
+        "AC-4(25)",
+        "AC-5"
+      ],
+      "confidence": "high",
+      "grounded": true
+    },
+    "duration_ms": 31370,
+    "error": null
+  },
+  "deterministic_checks": {
+    "citations_valid": true,
+    "num_citations": 5,
+    "token_overlap": 0.78
+  },
+  "llm_judge": {
+    "retrieval_relevance": 4,
+    "groundedness": 5,
+    "justification": "The retrieved controls directly support key protections (encryption at rest, media/data sanitization, dual authorization, separation of duties and sanitization on domain transfers) though they do not cover every aspect of cloud security (e.g., encryption in transit, key management, access logging), and every claim in the answer is traceable to one of the provided controls."
+  }
+}

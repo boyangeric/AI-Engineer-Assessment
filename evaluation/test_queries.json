@@ -1,0 +1,18 @@
+[
+  {
+    "query": "What controls apply to API security?"
+  },
+  {
+    "query": "How should sensitive data be protected in cloud systems?"
+  },
+  {
+    "query": "Summarise the requirements for access control"
+  },
+  {
+    "query": "What policies relate to logging and monitoring?"
+  },
+  {
+    "query": "What is the best recipe for chocolate chip cookies?",
+    "expect_fallback": true
+  }
+]

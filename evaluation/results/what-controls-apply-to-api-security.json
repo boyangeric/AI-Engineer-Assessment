@@ -1,0 +1,119 @@
+{
+  "query": "What controls apply to API security?",
+  "expect_fallback": false,
+  "trace": {
+    "question": "What controls apply to API security?",
+    "correlation_id": "e6fe2e731cca",
+    "plan": {
+      "original_query": "What controls apply to API security?",
+      "interpretation": "Find NIST SP 800-53 Rev 5 security controls that are relevant to securing APIs, including controls that explicitly mention APIs and controls that apply to common API security concerns (authentication, authorization, encryption, input validation, logging, boundary protection, etc.).",
+      "steps": [
+        {
+          "step_id": 1,
+          "search_query": "API OR \"application programming interface\" OR \"web service\" OR \"service interface\"",
+          "rationale": "Locate controls that explicitly mention APIs, application programming interfaces, or web/service interfaces so we capture guidance that directly references APIs."
+        },
+        {
+          "step_id": 2,
+          "search_query": "authentication OR authorization OR \"access control\" OR encryption OR \"input validation\" OR \"boundary protection\" OR \"secure coding\" OR logging OR audit OR \"session management\"",
+          "rationale": "Retrieve controls addressing common API security topics (identity and access, transport/data protection, input validation, boundary protection, secure development, and logging) that apply even if they don't explicitly mention APIs."
+        }
+      ]
+    },
+    "retrieval": {
+      "plan": {
+        "original_query": "What controls apply to API security?",
+        "interpretation": "Find NIST SP 800-53 Rev 5 security controls that are relevant to securing APIs, including controls that explicitly mention APIs and controls that apply to common API security concerns (authentication, authorization, encryption, input validation, logging, boundary protection, etc.).",
+        "steps": [
+          {
+            "step_id": 1,
+            "search_query": "API OR \"application programming interface\" OR \"web service\" OR \"service interface\"",
+            "rationale": "Locate controls that explicitly mention APIs, application programming interfaces, or web/service interfaces so we capture guidance that directly references APIs."
+          },
+          {
+            "step_id": 2,
+            "search_query": "authentication OR authorization OR \"access control\" OR encryption OR \"input validation\" OR \"boundary protection\" OR \"secure coding\" OR logging OR audit OR \"session management\"",
+            "rationale": "Retrieve controls addressing common API security topics (identity and access, transport/data protection, input validation, boundary protection, secure development, and logging) that apply even if they don't explicitly mention APIs."
+          }
+        ]
+      },
+      "documents": [
+        {
+          "id": "ac-4_17",
+          "control_id": "AC-4(17)",
+          "title": "Information Flow Enforcement — Domain Authentication",
+          "category": "Access Control",
+          "content": "Uniquely identify and authenticate source and destination points by [Assignment: selection: organization, system, application, service, individual] for information transfer.\n\nDiscussion: Attribution is a critical component of a security and privacy concept of operations. The ability to identify source and destination points for information flowing within systems allows the forensic reconstruction of events and encourages policy compliance by attributing policy violations to specific organizations or individuals. Successful domain authentication requires that system labels distinguish among systems, organizations, and individuals involved in preparing, sending, receiving, or disseminating information. Attribution also allows organizations to better maintain the lineage of personally identifiable information processing as it flows through systems and can facilitate consent tracking, as well as correction, deletion, or access requests from individuals.",
+          "score": 0.022929389029741287,
+          "similarity": 0.5546,
+          "reranker_score": null
+        },
+        {
+          "id": "ac-18_1",
+          "control_id": "AC-18(1)",
+          "title": "Wireless Access — Authentication and Encryption",
+          "category": "Access Control",
+          "content": "Protect wireless access to the system using authentication of [Assignment: selection: users; devices] and encryption.\n\nDiscussion: Wireless networking capabilities represent a significant potential vulnerability that can be exploited by adversaries. To protect systems with wireless access points, strong authentication of users and devices along with strong encryption can reduce susceptibility to threats by adversaries involving wireless technologies.",
+          "score": 0.02698412910103798,
+          "similarity": 0.5349,
+          "reranker_score": null
+        },
+        {
+          "id": "ac-4_21",
+          "control_id": "AC-4(21)",
+          "title": "Information Flow Enforcement — Physical or Logical Separation of Information Flows",
+          "category": "Access Control",
+          "content": "Separate information flows logically or physically using [Assignment: organization-defined mechanisms and/or techniques] to accomplish [Assignment: required separations].\n\nDiscussion: Enforcing the separation of information flows associated with defined types of data can enhance protection by ensuring that information is not commingled while in transit and by enabling flow control by transmission paths that are not otherwise achievable. Types of separable information include inbound and outbound communications traffic, service requests and responses, and information of differing security impact or classification levels.",
+          "score": 0.025448143482208252,
+          "similarity": 0.5018,
+          "reranker_score": null
+        },
+        {
+          "id": "ac-4_14",
+          "control_id": "AC-4(14)",
+          "title": "Information Flow Enforcement — Security or Privacy Policy Filter Constraints",
+          "category": "Access Control",
+          "content": "When transferring information between different security domains, implement [Assignment: organization-defined security or privacy policy filters] requiring fully enumerated formats that restrict data structure and content.\n\nDiscussion: Data structure and content restrictions reduce the range of potential malicious or unsanctioned content in cross-domain transactions. Security or privacy policy filters that restrict data structures include restricting file sizes and field lengths. Data content policy filters include encoding formats for character sets, restricting character data fields to only contain alpha-numeric characters, prohibiting special characters, and validating schema structures.",
+          "score": 0.024877900257706642,
+          "similarity": 0.5009,
+          "reranker_score": null
+        },
+        {
+          "id": "ac-14",
+          "control_id": "AC-14",
+          "title": "Permitted Actions Without Identification or Authentication",
+          "category": "Access Control",
+          "content": "a. Identify [Assignment: user actions] that can be performed on the system without identification or authentication consistent with organizational mission and business functions; and\nb. Document and provide supporting rationale in the security plan for the system, user actions not requiring identification or authentication.\n\nDiscussion: Specific user actions may be permitted without identification or authentication if organizations determine that identification and authentication are not required for the specified user actions. Organizations may allow a limited number of user actions without identification or authentication, including when individuals access public websites or other publicly accessible federal systems, when individuals use mobile phones to receive calls, or when facsimiles are received. Organizations identify actions that normally require identification or authentication but may, under certain circumstances, allow identification or authentication mechanisms to be bypassed. Such bypasses may occur, for example, via a software-readable physical switch that commands bypass of the logon functionality and is protected from accidental or unmonitored use. Permitting actions without identification or authentication does not apply to situations where identification and authentication have already occurred and are not repeated but rather to situations where identification and authentication have not yet occurred. Organizations may decide that there are no user actions that can be performed on organizational systems without identification and authentication, and therefore, the value for the assignment operation can be \"none.\"",
+          "score": 0.02584097906947136,
+          "similarity": 0.4907,
+          "reranker_score": null
+        }
+      ],
+      "has_relevant_results": true
+    },
+    "answer": {
+      "answer": "Applicable controls for API security (based only on the provided controls):\n\n- Uniquely identify and authenticate source and destination points for API information transfers to enable attribution and forensic reconstruction (AC-4(17)).\n\n- Enforce logical or physical separation of API information flows (e.g., inbound vs outbound, different service requests/responses, or data of differing impact) using organization-defined mechanisms (AC-4(21)).\n\n- When APIs transfer information between different security domains, apply organization-defined security/privacy policy filters that restrict data structure and content (e.g., enumerated formats, field lengths, character encoding, schema validation) (AC-4(14)).\n\n- Identify and document any API actions that may be permitted without identification or authentication, with supporting rationale in the system security plan (AC-14).\n\n- If APIs are accessed over wireless networks, protect wireless access using authentication of users/devices and encryption (AC-18(1)).",
+      "citations": [
+        "AC-4(17)",
+        "AC-4(21)",
+        "AC-4(14)",
+        "AC-14",
+        "AC-18(1)"
+      ],
+      "confidence": "high",
+      "grounded": true
+    },
+    "duration_ms": 29402,
+    "error": null
+  },
+  "deterministic_checks": {
+    "citations_valid": true,
+    "num_citations": 5,
+    "token_overlap": 0.762
+  },
+  "llm_judge": {
+    "retrieval_relevance": 5,
+    "groundedness": 5,
+    "justification": "All retrieved controls directly address core API security concerns (authentication/attribution, information-flow separation and filtering, allowed unauthenticated actions, and wireless access protections), and the final answer maps each claim to the corresponding control with only reasonable, supported examples."
+  }
+}
