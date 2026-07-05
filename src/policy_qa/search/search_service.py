@@ -16,22 +16,17 @@ from azure.core.credentials import AzureKeyCredential
 from azure.core.exceptions import HttpResponseError
 from azure.search.documents import SearchClient
 from azure.search.documents.models import VectorizedQuery
-from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
 from ..config import Settings
 from ..logging_setup import log_event
+from ..retry import transient_retry
 from ..schemas import RetrievedDocument
 from .embeddings import EmbeddingService, cosine_similarity
-from .index import SEMANTIC_CONFIG
+from .index_schema import SEMANTIC_CONFIG
 
 logger = logging.getLogger(__name__)
 
 _SELECT_FIELDS = ["id", "control_id", "title", "category", "description", "content_vector"]
-
-
-def _is_transient(exc: BaseException) -> bool:
-    status = getattr(exc, "status_code", None)
-    return status in (429, 500, 502, 503, 504)
 
 
 class SearchService:
@@ -44,13 +39,8 @@ class SearchService:
             credential=AzureKeyCredential(settings.search_api_key),
         )
 
-    @retry(
-        retry=retry_if_exception(_is_transient),
-        wait=wait_exponential(multiplier=2, max=30),
-        stop=stop_after_attempt(4),
-        reraise=True,
-    )
-    def _run_search(self, query: str, vector: list[float], top_k: int, semantic: bool):
+    @transient_retry(attempts=4, max_wait=30)
+    def _execute_search_request(self, query: str, vector: list[float], top_k: int, semantic: bool):
         kwargs: dict = {
             "search_text": query,
             "vector_queries": [
@@ -73,7 +63,7 @@ class SearchService:
 
         semantic = self._settings.use_semantic_ranker
         try:
-            results = self._run_search(query, query_vector, top_k, semantic)
+            results = self._execute_search_request(query, query_vector, top_k, semantic)
         except HttpResponseError as exc:
             if semantic:
                 # Semantic ranker unavailable (e.g. Free tier) -> plain hybrid.
@@ -82,7 +72,7 @@ class SearchService:
                     "semantic ranker unavailable, retrying plain hybrid",
                     error=str(exc.message),
                 )
-                results = self._run_search(query, query_vector, top_k, semantic=False)
+                results = self._execute_search_request(query, query_vector, top_k, semantic=False)
             else:
                 raise
 
@@ -113,5 +103,5 @@ class SearchService:
         )
         return documents
 
-    def document_count(self) -> int:
+    def get_document_count(self) -> int:
         return self._client.get_document_count()

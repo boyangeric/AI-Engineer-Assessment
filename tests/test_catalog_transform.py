@@ -2,7 +2,7 @@
 
 import pytest
 
-from policy_qa.ingestion.transform import control_to_record, transform_catalog
+from policy_qa.ingestion.catalog_transform import control_to_record, transform_catalog
 
 SYNTHETIC_CONTROL = {
     "id": "xx-1",
@@ -60,7 +60,7 @@ def test_search_safe_ids():
 def test_full_catalog_meets_record_minimum():
     """The real 800-53 Rev 5 catalog must yield >= 500 complete records."""
     pytest.importorskip("urllib.request")
-    from policy_qa.ingestion.download import download_catalog
+    from policy_qa.ingestion.catalog_download import download_catalog
 
     records = transform_catalog(download_catalog())
     assert len(records) >= 500

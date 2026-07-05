@@ -11,9 +11,9 @@ from ..config import Settings
 from ..logging_setup import log_event
 from ..schemas import PolicyRecord
 from ..search.embeddings import EmbeddingService
-from ..search.index import create_or_update_index
-from .download import download_catalog
-from .transform import transform_catalog
+from ..search.index_schema import create_or_update_index
+from .catalog_download import download_catalog
+from .catalog_transform import transform_catalog
 
 logger = logging.getLogger(__name__)
 
