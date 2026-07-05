@@ -4,8 +4,8 @@ Two graders per query:
 1. Deterministic groundedness — are all citations really retrieved controls,
    and how much of the answer's vocabulary is covered by the cited evidence
    (token-overlap score)?
-2. LLM-judge (same deployment, temperature 0, structured output) — 1-5 rubric
-   for retrieval relevance and answer groundedness.
+2. LLM-judge (same pinned deployment and structured output contract) — 1-5
+   rubric for retrieval relevance and answer groundedness.
 
 Results are written to evaluation/results/ as per-query JSON plus report.md.
 """

@@ -58,7 +58,7 @@ def load_prompt(agent: str, version: int | None = None) -> str:
 
 @lru_cache(maxsize=None)
 def _read_prompt(agent: str, version: int) -> str:
-    resource = files(__package__).joinpath(f"{agent}_v{version}.md")
+    resource = files("policy_qa.prompts").joinpath(f"{agent}_v{version}.md")
     if not resource.is_file():
         raise PromptNotFoundError(f"No prompt file for agent '{agent}' version {version}")
     text = resource.read_text(encoding="utf-8")
