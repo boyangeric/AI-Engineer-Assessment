@@ -237,46 +237,67 @@ pytest        # OSCAL transform (≥500 records, schema completeness), contracts
 ## Project layout
 
 ```
-src/policy_qa/
-├── config.py                     # env-var configuration, fail-fast validation
-├── utils/                        # dependency-free helpers usable by any layer
-│   ├── logging_setup.py          # structured JSON logging + correlation ids
-│   ├── text.py                   # tokenizing, control-id normalization,
-│   │                             # prompt-injection escaping
-│   └── retry.py                  # shared transient-error retry policy (tenacity)
-├── schemas/                      # typed inter-agent contracts, split by domain
-│   ├── records.py                # PolicyRecord (index document shape)
-│   ├── planning.py               # QueryIntent, SearchStep, QueryPlan
-│   ├── retrieval.py              # RetrievedDocument, RetrievalResult, RerankedContext
-│   ├── answers.py                # FinalAnswer, DraftAnswer, safe-fallback factories
-│   ├── grading.py                # relevance/faithfulness grades, JudgeScore
-│   └── moderation.py             # moderation verdict + edge message
-├── ingestion/
-│   ├── catalog_download.py       # fetch + cache the OSCAL 800-53 catalog
-│   ├── catalog_transform.py      # OSCAL JSON → flat policy records
-│   └── pipeline.py               # create index, embed, upload (≥500 gate)
-├── search/
-│   ├── index_schema.py           # Azure AI Search index definition
-│   ├── embeddings.py             # Azure OpenAI query/document embeddings
-│   └── search_service.py         # hybrid search + semantic reranker integration
-├── agents/                       # one workflow node per module
-│   ├── agent_factory.py          # agent construction, deterministic options
-│   ├── prompt_blocks.py          # shared prompt blocks with injection defence
-│   ├── moderation.py             # content moderation gate (first node)
-│   ├── planner.py                # Planner Agent executor
-│   ├── retrieval.py              # deterministic, concurrent Retrieval Agent executor
-│   ├── relevance_grader.py       # LLM context relevance reranker (batched)
-│   ├── responder.py              # Response Agent executor
-│   ├── faithfulness_grader.py    # single faithfulness quality gate
-│   ├── meta_knowledge.py         # deterministic self-description, no LLM call
-│   └── safe_fallback.py          # reason-specific safe answers, no LLM call
-├── prompts/                      # versioned prompt files, one per agent/grader
-├── graph.py                      # workflow topology: gates, quality loops, edges
-├── orchestrator.py               # runtime facade: clients, error guard, tracing
-├── tracing.py                    # typed per-run state + per-query trace record
-├── evaluator.py                  # eval harness (deterministic + LLM judge)
-├── report.py                     # human-readable CLI report formatting
-└── cli.py                        # policy-qa ingest | ask | interactive | evaluate
+.
+├── .env.example                         # credential-free configuration template
+├── .gitignore
+├── ARCHITECTURE.md                      # design, security and scalability notes
+├── README.md
+├── evaluation/
+│   ├── test_queries.json                # five assessment queries
+│   ├── results/                         # committed JSON traces + Markdown report
+│   └── sample_usage/                    # interactive CLI screenshots
+├── src/policy_qa/
+│   ├── agents/
+│   │   ├── llm/                         # model-backed workflow executors
+│   │   │   ├── moderation.py
+│   │   │   ├── planner.py
+│   │   │   ├── relevance_grader.py
+│   │   │   ├── responder.py
+│   │   │   └── faithfulness_grader.py
+│   │   ├── deterministic/               # executors that make no LLM call
+│   │   │   ├── retrieval.py
+│   │   │   ├── meta_knowledge.py
+│   │   │   └── safe_fallback.py
+│   │   └── shared/
+│   │       ├── agent_factory.py         # common Agent Framework construction
+│   │       └── prompt_blocks.py         # escaped, delimited untrusted context
+│   ├── ingestion/
+│   │   ├── catalog_download.py          # fetch and cache the OSCAL catalog
+│   │   ├── catalog_transform.py         # OSCAL JSON → policy records
+│   │   └── pipeline.py                  # index creation, embedding and upload
+│   ├── prompts/                         # versioned agent and grader prompts
+│   ├── schemas/                         # typed inter-agent Pydantic contracts
+│   │   ├── answers.py
+│   │   ├── grading.py
+│   │   ├── moderation.py
+│   │   ├── planning.py
+│   │   ├── records.py
+│   │   └── retrieval.py
+│   ├── search/
+│   │   ├── embeddings.py                # Azure OpenAI embeddings
+│   │   ├── index_schema.py              # vector + semantic index definition
+│   │   └── search_service.py            # hybrid search and semantic reranking
+│   ├── utils/
+│   │   ├── logging_setup.py             # rotating structured JSONL logs
+│   │   ├── retry.py                     # transient-error retry policy
+│   │   └── text.py                      # normalization and escaping helpers
+│   ├── cli.py                           # command-line entry points
+│   ├── config.py                        # environment configuration and validation
+│   ├── evaluator.py                     # deterministic checks + LLM judge
+│   ├── graph.py                         # Agent Framework workflow topology
+│   ├── orchestrator.py                  # clients, workflow execution and errors
+│   ├── report.py                        # human-readable CLI rendering
+│   └── tracing.py                       # per-query state and trace records
+├── tests/
+│   ├── fakes.py
+│   ├── test_catalog_transform.py
+│   ├── test_fallback.py
+│   ├── test_injection_defence.py
+│   ├── test_logging.py
+│   ├── test_routing.py
+│   └── test_schemas.py
+├── pyproject.toml                        # package metadata and dependencies
+└── requirements.txt                     # alternative dependency list
 ```
 
 ## Costs and infrastructure lifecycle
