@@ -18,18 +18,25 @@ import os
 from functools import lru_cache
 from importlib.resources import files
 
-from ..logging_setup import log_event
+from ..utils.logging_setup import log_event
 
 logger = logging.getLogger(__name__)
 
-ACTIVE_VERSIONS: dict[str, int] = {
+# Prompts used by the runtime query pipeline (graph.py).
+RUNTIME_VERSIONS: dict[str, int] = {
     "moderation": 1,
     "planner": 1,
     "context_relevance_grader": 1,
     "responder": 1,
-    "hallucination_grader": 1,
+    "faithfulness_grader": 1,
+}
+
+# Prompts used only by the evaluation harness (evaluator.py), never at runtime.
+EVAL_VERSIONS: dict[str, int] = {
     "judge": 1,
 }
+
+ACTIVE_VERSIONS: dict[str, int] = {**RUNTIME_VERSIONS, **EVAL_VERSIONS}
 
 
 class PromptNotFoundError(RuntimeError):

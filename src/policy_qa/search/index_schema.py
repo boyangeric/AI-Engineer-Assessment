@@ -21,7 +21,7 @@ from azure.search.documents.indexes.models import (
 )
 
 from ..config import Settings
-from ..logging_setup import log_event
+from ..utils.logging_setup import log_event
 
 logger = logging.getLogger(__name__)
 
@@ -43,9 +43,7 @@ def build_index(settings: Settings) -> SearchIndex:
             name="content_vector",
             type="Collection(Edm.Single)",
             searchable=True,
-            # Retrievable so the client can compute query<->doc cosine similarity
-            # as an absolute relevance gate (RRF scores are only rank fusion).
-            hidden=False,
+            hidden=True,
             vector_search_dimensions=settings.embedding_dimensions,
             vector_search_profile_name=VECTOR_PROFILE,
         ),

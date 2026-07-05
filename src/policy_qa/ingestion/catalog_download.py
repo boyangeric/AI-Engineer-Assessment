@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from ..config import PROJECT_ROOT
-from ..logging_setup import log_event
+from ..utils.logging_setup import log_event
 
 logger = logging.getLogger(__name__)
 

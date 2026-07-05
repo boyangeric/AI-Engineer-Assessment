@@ -1,8 +1,9 @@
 """Fallback node: terminal safe answers for every failure path — never an LLM call.
 
-Reached when moderation blocks the question, no document survives context
-relevance, or the generated answer fails faithfulness. Each incoming message
-maps to a reason-specific deterministic response.
+Reached when moderation blocks the question, the planner classifies it as
+out-of-domain, no document survives context relevance, or the generated answer
+fails faithfulness. Each incoming message maps to a reason-specific
+deterministic response.
 """
 
 from __future__ import annotations
@@ -12,14 +13,16 @@ from typing import Any, Never
 
 from agent_framework import Executor, WorkflowContext, handler
 
-from ..logging_setup import log_event
+from ..utils.logging_setup import log_event
 from ..schemas import (
     ContentModerationResponse,
     FaithfulnessResult,
     FinalAnswer,
+    QueryPlan,
     RerankedContext,
     make_fallback_answer,
 )
+from ..tracing import TraceState
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +30,7 @@ logger = logging.getLogger(__name__)
 class FallbackExecutor(Executor):
     """Terminal node for every safe-failure path — never makes an LLM call."""
 
-    def __init__(self, trace: dict[str, Any]):
+    def __init__(self, trace: TraceState):
         super().__init__(id="fallback")
         self._trace = trace
 
@@ -35,8 +38,8 @@ class FallbackExecutor(Executor):
         self, reason: str, detail: dict[str, Any], ctx: WorkflowContext[Never, FinalAnswer]
     ) -> None:
         answer = make_fallback_answer(reason=reason)
-        self._trace["answer"] = answer
-        self._trace["fallback_reason"] = reason
+        self._trace.answer = answer
+        self._trace.fallback_reason = reason
         log_event(
             logger,
             "fallback answered without LLM call",
@@ -53,6 +56,15 @@ class FallbackExecutor(Executor):
     ) -> None:
         await self._yield_fallback(
             "moderation_blocked", {"category": result.category}, ctx
+        )
+
+    @handler
+    async def on_out_of_domain(
+        self, plan: QueryPlan, ctx: WorkflowContext[Never, FinalAnswer]
+    ) -> None:
+        """A QueryPlan arriving here was routed off the planner's intent switch."""
+        await self._yield_fallback(
+            "out_of_domain", {"intent": plan.intent.value}, ctx
         )
 
     @handler

@@ -9,21 +9,22 @@ from typing import Any
 from agent_framework import Executor, WorkflowContext, handler
 
 from ..config import Settings
-from ..logging_setup import log_event
+from ..utils.logging_setup import log_event
 from ..schemas import DraftAnswer, FaithfulnessGrade, FaithfulnessResult, FinalAnswer
+from ..tracing import TraceState
 from .agent_factory import parse_structured
-from .answer_draft_generation import build_evidence_block
+from .prompt_blocks import build_evidence_block
 
 logger = logging.getLogger(__name__)
 
 
-class HallucinationGraderExecutor(Executor):
+class FaithfulnessGraderExecutor(Executor):
     """Workflow node: DraftAnswer in, FaithfulnessResult out (routing on edges)."""
 
-    def __init__(self, agent: Any, settings: Settings, trace: dict[str, Any]):
-        super().__init__(id="hallucination_grader")
+    def __init__(self, agent: Any, settings: Settings, trace: TraceState):
+        super().__init__(id="faithfulness_grader")
         self._agent = agent
-        self._threshold = settings.hallucination_score_threshold
+        self._threshold = settings.faithfulness_score_threshold
         self._trace = trace
 
     @handler
@@ -41,11 +42,11 @@ class HallucinationGraderExecutor(Executor):
         grade = parse_structured(response, FaithfulnessGrade)
         result = FaithfulnessResult(draft=draft, **grade.model_dump())
         latency_ms = round((time.perf_counter() - started) * 1000)
-        self._trace.setdefault("faithfulness", []).append(grade.model_dump())
+        self._trace.faithfulness.append(grade.model_dump())
         log_event(
             logger,
-            "hallucination grading completed",
-            agent="hallucination_grader",
+            "faithfulness grading completed",
+            agent="faithfulness_grader",
             input={"answer_chars": len(draft.answer.answer)},
             output={
                 **grade.model_dump(),
@@ -54,7 +55,7 @@ class HallucinationGraderExecutor(Executor):
             latency_ms=latency_ms,
         )
         if grade.faithfulness_score >= self._threshold:
-            self._trace["answer"] = draft.answer
+            self._trace.answer = draft.answer
             await ctx.yield_output(draft.answer)
             return
         await ctx.send_message(result)

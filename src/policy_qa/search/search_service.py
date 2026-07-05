@@ -1,11 +1,9 @@
 """Hybrid (keyword + vector) search against Azure AI Search.
 
-Relevance gating: the hybrid RRF score only reflects rank fusion, not absolute
-relevance, so the client also computes the cosine similarity between the query
-embedding and each document's stored embedding. That similarity is an absolute
-signal used to decide whether retrieval found anything trustworthy (the
-fallback gate). When the semantic ranker is enabled (Basic tier and above) the
-reranker score is used as an additional signal.
+Azure AI Search owns candidate retrieval and ordering. When semantic ranking is
+enabled, Azure also returns `@search.reranker_score`, which the workflow uses
+as a stronger relevance signal without introducing a second client-side ranking
+system.
 """
 
 from __future__ import annotations
@@ -18,15 +16,15 @@ from azure.search.documents import SearchClient
 from azure.search.documents.models import VectorizedQuery
 
 from ..config import Settings
-from ..logging_setup import log_event
-from ..retry import transient_retry
+from ..utils.logging_setup import log_event
+from ..utils.retry import transient_retry
 from ..schemas import RetrievedDocument
-from .embeddings import EmbeddingService, cosine_similarity
+from .embeddings import EmbeddingService
 from .index_schema import SEMANTIC_CONFIG
 
 logger = logging.getLogger(__name__)
 
-_SELECT_FIELDS = ["id", "control_id", "title", "category", "description", "content_vector"]
+_SELECT_FIELDS = ["id", "control_id", "title", "category", "description"]
 
 
 class SearchService:
@@ -57,7 +55,7 @@ class SearchService:
         return list(self._client.search(**kwargs))
 
     def hybrid_search(self, query: str, top_k: int | None = None) -> list[RetrievedDocument]:
-        """Run hybrid search and return typed, similarity-scored documents."""
+        """Run hybrid search and return typed documents in Azure's ranked order."""
         top_k = top_k or self._settings.retrieval_top_k
         query_vector = self._embeddings.embed_one(query)
 
@@ -78,7 +76,6 @@ class SearchService:
 
         documents: list[RetrievedDocument] = []
         for hit in results:
-            doc_vector = hit.get("content_vector") or []
             documents.append(
                 RetrievedDocument(
                     id=hit["id"],
@@ -87,7 +84,6 @@ class SearchService:
                     category=hit["category"],
                     content=hit["description"],
                     score=hit["@search.score"],
-                    similarity=round(cosine_similarity(query_vector, doc_vector), 4),
                     reranker_score=hit.get("@search.reranker_score"),
                 )
             )
@@ -95,9 +91,17 @@ class SearchService:
             logger,
             "hybrid search executed",
             query=query,
+            semantic_ranker_requested=semantic,
+            semantic_ranker_exercised=any(
+                document.reranker_score is not None for document in documents
+            ),
             top_k=top_k,
             results=[
-                {"control_id": d.control_id, "similarity": d.similarity, "score": d.score}
+                {
+                    "control_id": d.control_id,
+                    "score": d.score,
+                    "reranker_score": d.reranker_score,
+                }
                 for d in documents
             ],
         )

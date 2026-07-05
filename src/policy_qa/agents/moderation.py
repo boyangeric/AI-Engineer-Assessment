@@ -20,8 +20,9 @@ from agent_framework.exceptions import (
     ChatClientContentFilterException,
 )
 
-from ..logging_setup import log_event
+from ..utils.logging_setup import log_event
 from ..schemas import ContentModerationResponse, ModerationVerdict
+from ..tracing import TraceState
 from .agent_factory import parse_structured
 
 logger = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ logger = logging.getLogger(__name__)
 class ModerationExecutor(Executor):
     """Workflow node wrapping the moderation grader; emits ContentModerationResponse."""
 
-    def __init__(self, agent: Any, trace: dict[str, Any]):
+    def __init__(self, agent: Any, trace: TraceState):
         super().__init__(id="moderation")
         self._agent = agent
         self._trace = trace
@@ -47,11 +48,11 @@ class ModerationExecutor(Executor):
             verdict = ModerationVerdict(
                 allowed=False,
                 category="platform_content_filter",
-                reason="Blocked by the Azure OpenAI content filter.",
+                reason="Blocked by the Azure OpenAI model content filter.",
             )
         result = ContentModerationResponse(question=question, **verdict.model_dump())
         latency_ms = round((time.perf_counter() - started) * 1000)
-        self._trace["moderation"] = result
+        self._trace.moderation = result
         log_event(
             logger,
             "moderation completed",

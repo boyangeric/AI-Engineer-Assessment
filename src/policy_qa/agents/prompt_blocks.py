@@ -1,18 +1,14 @@
-"""Answer-generation helpers shared by the response executor."""
+"""Prompt-block builders shared by the responder and both grading gates.
+
+Every block that carries retrieved index content applies the XML delimiting
+and escaping that defends against indirect prompt injection, so the defence
+lives in exactly one place.
+"""
 
 from __future__ import annotations
 
-from typing import Any
-
-from ..schemas import (
-    FinalAnswer,
-    RerankedContext,
-    RetrievedDocument,
-    make_fallback_answer,
-    validate_citations,
-)
-from ..text import wrap_untrusted_document
-from .agent_factory import parse_structured
+from ..schemas import RerankedContext, RetrievedDocument
+from ..utils.text import wrap_untrusted_document
 
 
 def build_evidence_block(documents: list[RetrievedDocument]) -> str:
@@ -34,6 +30,7 @@ def build_evidence_block(documents: list[RetrievedDocument]) -> str:
 
 
 def build_context_block(context: RerankedContext) -> str:
+    """Question plus delimited evidence: the responder's full user prompt."""
     return "\n".join(
         [
             f"User question: {context.question}",
@@ -43,10 +40,6 @@ def build_context_block(context: RerankedContext) -> str:
     )
 
 
-async def generate_draft(agent: Any, context: RerankedContext) -> FinalAnswer:
-    """Run the responder agent and apply the citation-validation defence."""
-    response = await agent.run(build_context_block(context))
-    answer: FinalAnswer = parse_structured(response, FinalAnswer)
-    if answer.grounded:
-        return validate_citations(answer, context.documents)
-    return make_fallback_answer(reason="model_reported_insufficient_context")
+def build_grading_block(question: str, documents: list[RetrievedDocument]) -> str:
+    """Question plus delimited evidence: the relevance grader's full prompt."""
+    return "\n".join([f"User question: {question}", "", build_evidence_block(documents)])

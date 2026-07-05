@@ -3,7 +3,7 @@
 import json
 import logging
 
-from policy_qa.logging_setup import log_event, setup_logging
+from policy_qa.utils.logging_setup import log_event, setup_logging
 
 
 def test_structured_logs_go_to_file_without_console_noise(tmp_path, capsys):

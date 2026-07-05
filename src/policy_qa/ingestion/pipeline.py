@@ -8,7 +8,7 @@ from azure.core.credentials import AzureKeyCredential
 from azure.search.documents import SearchClient
 
 from ..config import Settings
-from ..logging_setup import log_event
+from ..utils.logging_setup import log_event
 from ..schemas import PolicyRecord
 from ..search.embeddings import EmbeddingService
 from ..search.index_schema import create_or_update_index

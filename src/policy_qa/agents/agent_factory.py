@@ -22,14 +22,17 @@ from ..config import Settings
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
 
-DETERMINISTIC_OPTIONS: OpenAIChatCompletionOptions[Any] = {
-    "seed": 42,
-    "verbosity": "low",
-}
+def deterministic_options(settings: Settings) -> OpenAIChatCompletionOptions[Any]:
+    """Reproducibility options shared by every agent, sourced from Settings."""
+    return {
+        "seed": settings.llm_seed,
+        "verbosity": settings.llm_verbosity,
+    }
 
 
 def build_chat_client(settings: Settings) -> OpenAIChatCompletionClient:
     """Build the shared Azure OpenAI chat client bound to the pinned deployment.
+
     Args:
         settings: Configuration holding the Azure OpenAI endpoint, API key,
             API version, and the pinned chat deployment name.
@@ -47,6 +50,7 @@ def build_chat_client(settings: Settings) -> OpenAIChatCompletionClient:
 
 def build_deterministic_agent(
     client: OpenAIChatCompletionClient,
+    settings: Settings,
     *,
     name: str,
     instructions: str,
@@ -61,6 +65,7 @@ def build_deterministic_agent(
 
     Args:
         client: Chat client bound to the pinned Azure OpenAI deployment.
+        settings: Configuration providing the shared determinism levers.
         name: Agent name used in framework traces and logs.
         instructions: System prompt (a versioned prompt from `policy_qa.prompts`).
         response_format: Optional Pydantic model enforcing schema-constrained structured output.
@@ -69,7 +74,7 @@ def build_deterministic_agent(
     Returns:
         A configured `agent_framework.Agent` ready to `run()`.
     """
-    options: OpenAIChatCompletionOptions[Any] = DETERMINISTIC_OPTIONS.copy()
+    options: OpenAIChatCompletionOptions[Any] = deterministic_options(settings)
     if response_format is not None:
         options["response_format"] = response_format
     return Agent(

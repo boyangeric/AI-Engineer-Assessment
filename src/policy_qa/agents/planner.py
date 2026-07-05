@@ -8,8 +8,9 @@ from typing import Any
 
 from agent_framework import Executor, WorkflowContext, handler
 
-from ..logging_setup import log_event
+from ..utils.logging_setup import log_event
 from ..schemas import ContentModerationResponse, QueryPlan
+from ..tracing import TraceState
 from .agent_factory import parse_structured
 
 logger = logging.getLogger(__name__)
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 class PlannerExecutor(Executor):
     """Workflow node wrapping the Planner Agent; emits a typed QueryPlan."""
 
-    def __init__(self, agent: Any, trace: dict[str, Any]):
+    def __init__(self, agent: Any, trace: TraceState):
         super().__init__(id="planner")
         self._agent = agent
         self._trace = trace
@@ -29,7 +30,7 @@ class PlannerExecutor(Executor):
         plan = parse_structured(response, QueryPlan)
         plan = plan.model_copy(update={"original_query": query})
         latency_ms = round((time.perf_counter() - started) * 1000)
-        self._trace["plan"] = plan
+        self._trace.plan = plan
         log_event(
             logger,
             "planner completed",

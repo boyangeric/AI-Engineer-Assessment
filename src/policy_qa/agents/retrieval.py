@@ -2,7 +2,8 @@
 
 The Planner already supplies structured search steps, so another LLM call adds
 latency without adding reasoning. Searches run concurrently, and final selection
-reserves coverage across steps before filling remaining slots by similarity.
+reserves coverage across steps before filling remaining slots by Azure's ranked
+order.
 """
 
 from __future__ import annotations
@@ -15,9 +16,10 @@ from typing import Any
 from agent_framework import Executor, WorkflowContext, handler
 
 from ..config import Settings
-from ..logging_setup import log_event
+from ..utils.logging_setup import log_event
 from ..schemas import QueryPlan, RetrievalResult, RetrievedDocument
 from ..search.search_service import SearchService
+from ..tracing import TraceState
 
 logger = logging.getLogger(__name__)
 
@@ -30,20 +32,13 @@ def select_diverse_documents(
     selected_ids: set[str] = set()
 
     for documents in result_sets:
-        ranked = sorted(
-            documents, key=lambda document: (document.similarity, document.score), reverse=True
-        )
-        for document in ranked:
+        for document in documents:
             if document.id not in selected_ids:
                 selected.append(document)
                 selected_ids.add(document.id)
                 break
 
-    remaining = sorted(
-        (document for documents in result_sets for document in documents),
-        key=lambda document: (document.similarity, document.score),
-        reverse=True,
-    )
+    remaining = [document for documents in result_sets for document in documents]
     for document in remaining:
         if len(selected) >= settings.retrieval_top_k:
             break
@@ -52,13 +47,13 @@ def select_diverse_documents(
             selected_ids.add(document.id)
 
     top = selected[: settings.retrieval_top_k]
-    has_relevant = any(
-        document.similarity >= settings.relevance_threshold
-        or (
-            document.reranker_score is not None
-            and document.reranker_score >= settings.reranker_threshold
-        )
-        for document in top
+    reranker_scores = [
+        document.reranker_score for document in top if document.reranker_score is not None
+    ]
+    has_relevant = (
+        any(score >= settings.reranker_threshold for score in reranker_scores)
+        if reranker_scores
+        else bool(top)
     )
     return top, has_relevant
 
@@ -70,7 +65,7 @@ class RetrievalExecutor(Executor):
         self,
         search_service: SearchService,
         settings: Settings,
-        trace: dict[str, Any],
+        trace: TraceState,
     ):
         super().__init__(id="retrieval")
         self._search = search_service
@@ -95,7 +90,7 @@ class RetrievalExecutor(Executor):
             has_relevant_results=has_relevant,
         )
         latency_ms = round((time.perf_counter() - started) * 1000)
-        self._trace["retrieval"] = result
+        self._trace.retrieval = result
         log_event(
             logger,
             "retrieval completed",
@@ -103,7 +98,11 @@ class RetrievalExecutor(Executor):
             input=[step.search_query for step in plan.steps],
             output={
                 "documents": [
-                    {"control_id": document.control_id, "similarity": document.similarity}
+                    {
+                        "control_id": document.control_id,
+                        "score": document.score,
+                        "reranker_score": document.reranker_score,
+                    }
                     for document in documents
                 ],
                 "has_relevant_results": has_relevant,

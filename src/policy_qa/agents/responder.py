@@ -19,17 +19,34 @@ from typing import Any
 
 from agent_framework import Executor, WorkflowContext, handler
 
-from ..logging_setup import log_event
-from ..schemas import DraftAnswer, FinalAnswer, RerankedContext, make_fallback_answer
-from .answer_draft_generation import generate_draft
+from ..utils.logging_setup import log_event
+from ..schemas import (
+    DraftAnswer,
+    FinalAnswer,
+    RerankedContext,
+    make_fallback_answer,
+    validate_citations,
+)
+from ..tracing import TraceState
+from .agent_factory import parse_structured
+from .prompt_blocks import build_context_block
 
 logger = logging.getLogger(__name__)
+
+
+async def generate_draft(agent: Any, context: RerankedContext) -> FinalAnswer:
+    """Run the responder agent and apply the citation-validation defence."""
+    response = await agent.run(build_context_block(context))
+    answer: FinalAnswer = parse_structured(response, FinalAnswer)
+    if answer.grounded:
+        return validate_citations(answer, context.documents)
+    return make_fallback_answer(reason="model_reported_insufficient_context")
 
 
 class ResponseExecutor(Executor):
     """Workflow node: RerankedContext in, DraftAnswer out (to the quality gates)."""
 
-    def __init__(self, agent: Any, trace: dict[str, Any]):
+    def __init__(self, agent: Any, trace: TraceState):
         super().__init__(id="responder")
         self._agent = agent
         self._trace = trace
@@ -44,8 +61,8 @@ class ResponseExecutor(Executor):
             # Defence in depth: the graph edge should already have routed an
             # empty RerankedContext to the fallback.
             answer = make_fallback_answer(reason="no_relevant_results")
-            self._trace["answer"] = answer
-            self._trace["fallback_reason"] = "no_relevant_results"
+            self._trace.answer = answer
+            self._trace.fallback_reason = "no_relevant_results"
             log_event(
                 logger,
                 "responder short-circuited to safe fallback (no LLM call)",
@@ -59,7 +76,7 @@ class ResponseExecutor(Executor):
 
         answer = await generate_draft(self._agent, context)
         latency_ms = round((time.perf_counter() - started) * 1000)
-        self._trace["answer"] = answer
+        self._trace.answer = answer
         log_event(
             logger,
             "responder completed",
@@ -71,7 +88,7 @@ class ResponseExecutor(Executor):
         if not answer.grounded:
             # Citation validation degraded the draft; grading canned text is
             # pointless, so terminate safely here.
-            self._trace["fallback_reason"] = "no_valid_citations"
+            self._trace.fallback_reason = "no_valid_citations"
             await ctx.yield_output(answer)
             return
         await ctx.send_message(DraftAnswer(answer=answer, context=context))

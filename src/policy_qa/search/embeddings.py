@@ -8,13 +8,11 @@ service-side vectorizers).
 from __future__ import annotations
 
 import logging
-import math
-
 from openai import AzureOpenAI
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential_jitter
 
 from ..config import Settings
-from ..logging_setup import log_event
+from ..utils.logging_setup import log_event
 
 logger = logging.getLogger(__name__)
 
@@ -58,9 +56,3 @@ class EmbeddingService:
 
     def embed_one(self, text: str) -> list[float]:
         return self._embed_batch([text])[0]
-
-# Manual reranking signal, can be replaced by semantic reranker with a higher tier
-def cosine_similarity(a: list[float], b: list[float]) -> float:
-    dot = sum(x * y for x, y in zip(a, b))
-    norm = math.sqrt(sum(x * x for x in a)) * math.sqrt(sum(y * y for y in b))
-    return dot / norm if norm else 0.0

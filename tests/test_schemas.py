@@ -23,7 +23,6 @@ def _doc(control_id: str) -> RetrievedDocument:
         category="c",
         content="content",
         score=0.03,
-        similarity=0.5,
     )
 
 
