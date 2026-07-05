@@ -24,5 +24,8 @@ policy-qa = "policy_qa.cli:app"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+policy_qa = ["prompts/*.md"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

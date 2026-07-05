@@ -7,6 +7,7 @@ for the evaluation rubric. Agents never exchange free-form text.
 
 from __future__ import annotations
 
+import re
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -80,6 +81,91 @@ class FinalAnswer(BaseModel):
     )
 
 
+# --- LLM grader outputs (schema-constrained structured outputs) ---------------
+# Each grader agent produces one of these small models; the executor wraps it
+# into the richer edge message below, adding the question/draft/retry context
+# the model itself must not invent.
+
+
+class ModerationVerdict(BaseModel):
+    """LLM output of the moderation grader."""
+
+    allowed: bool = Field(description="True when the question is safe to process")
+    category: str = Field(
+        default="none", description="Violation category when blocked, e.g. 'prompt_injection'"
+    )
+    reason: str = Field(default="", description="Short explanation of the verdict")
+
+
+class DocumentRelevance(BaseModel):
+    """One document's graded relevance within a ContextRelevanceGrade."""
+
+    control_id: str
+    relevance_score: float = Field(ge=0.0, le=1.0)
+
+
+class ContextRelevanceGrade(BaseModel):
+    """LLM output of the context relevance grader (all docs in one call)."""
+
+    scores: list[DocumentRelevance]
+    reasoning: str = ""
+
+
+class FaithfulnessGrade(BaseModel):
+    """LLM output of the hallucination grader."""
+
+    faithfulness_score: float = Field(
+        ge=0.0, le=1.0, description="1.0 = every claim supported by the evidence"
+    )
+    unsupported_claims: list[str] = Field(default_factory=list)
+    reasoning: str = ""
+
+
+# --- Edge messages (typed contracts carried on graph edges) --------------------
+
+
+class ContentModerationResponse(BaseModel):
+    """Moderation node output: whether the question may enter the pipeline."""
+
+    question: str
+    allowed: bool = Field(description="True when the question is safe to process")
+    category: str = Field(
+        default="none", description="Violation category when blocked, e.g. 'prompt_injection'"
+    )
+    reason: str = Field(default="", description="Short explanation of the verdict")
+
+
+class RerankedContext(BaseModel):
+    """Context relevance grader output: LLM-reranked evidence for the responder."""
+
+    question: str
+    plan: QueryPlan
+    documents: list[RetrievedDocument] = Field(
+        description="reranked_docs: docs clearing the context relevance threshold, best first"
+    )
+    relevance_scores: dict[str, float] = Field(
+        default_factory=dict, description="control_id -> graded relevance score (0-1)"
+    )
+
+
+class DraftAnswer(BaseModel):
+    """Responder output: a candidate answer awaiting faithfulness grading."""
+
+    answer: FinalAnswer
+    context: RerankedContext
+
+
+class FaithfulnessResult(BaseModel):
+    """Hallucination grader output: how well the draft is supported by evidence."""
+
+    draft: DraftAnswer
+    faithfulness_score: float = Field(
+        ge=0.0, le=1.0, description="1.0 = every claim supported by the evidence"
+    )
+    unsupported_claims: list[str] = Field(default_factory=list)
+    reasoning: str = ""
+
+
 class JudgeScore(BaseModel):
     """LLM-judge rubric used by the evaluation harness."""
 
@@ -94,11 +180,26 @@ FALLBACK_ANSWER_TEXT = (
     "or consult your security team directly."
 )
 
+# Reason-specific safe responses; anything unlisted uses FALLBACK_ANSWER_TEXT.
+FALLBACK_MESSAGES: dict[str, str] = {
+    "moderation_blocked": (
+        "This request was declined by the content moderation check. This assistant "
+        "only answers questions about enterprise security policy (NIST SP 800-53 "
+        "Rev 5). Please rephrase your question."
+    ),
+    "faithfulness_failed": (
+        "An answer was generated but did not pass the system's grounding quality "
+        "check, so it was withheld rather than risk giving you "
+        "unsupported information. Please rephrase the question or consult your "
+        "security team directly."
+    ),
+}
+
 
 def make_fallback_answer(reason: str = "no_relevant_results") -> FinalAnswer:
     """Deterministic safe response used whenever grounding cannot be guaranteed."""
     return FinalAnswer(
-        answer=FALLBACK_ANSWER_TEXT,
+        answer=FALLBACK_MESSAGES.get(reason, FALLBACK_ANSWER_TEXT),
         citations=[],
         confidence="low",
         grounded=False,
@@ -106,13 +207,35 @@ def make_fallback_answer(reason: str = "no_relevant_results") -> FinalAnswer:
 
 
 def validate_citations(answer: FinalAnswer, documents: list[RetrievedDocument]) -> FinalAnswer:
-    """Strip any citation that does not refer to an actually-retrieved control.
+    """Keep citations that refer to an actually-retrieved control.
 
-    If nothing valid remains the answer cannot be trusted as grounded, so the
-    safe fallback is returned instead.
+    Models occasionally decorate a citation (for example, ``"AC-2 — Account
+    Management"``) or put the control ID inline while omitting it from the
+    structured citations field. Canonicalize both forms before deciding that
+    an otherwise-grounded answer has no evidence.
     """
-    retrieved_ids = {d.control_id.upper() for d in documents}
-    valid = [c for c in answer.citations if c.upper() in retrieved_ids]
+    control_pattern = re.compile(
+        r"\b([A-Z]{2,3})\s*-\s*(\d+)(?:\s*\(\s*(\d+)\s*\))?",
+        re.IGNORECASE,
+    )
+
+    def canonical_ids(text: str) -> list[str]:
+        return [
+            f"{family.upper()}-{number}" + (f"({enhancement})" if enhancement else "")
+            for family, number, enhancement in control_pattern.findall(text)
+        ]
+
+    retrieved_ids = {d.control_id.upper(): d.control_id for d in documents}
+    candidates: list[str] = []
+    for citation in answer.citations:
+        candidates.extend(canonical_ids(citation))
+    candidates.extend(canonical_ids(answer.answer))
+
+    valid: list[str] = []
+    for candidate in candidates:
+        actual = retrieved_ids.get(candidate)
+        if actual and actual not in valid:
+            valid.append(actual)
     if not valid:
         return make_fallback_answer(reason="no_valid_citations")
     return answer.model_copy(update={"citations": valid, "grounded": True})
