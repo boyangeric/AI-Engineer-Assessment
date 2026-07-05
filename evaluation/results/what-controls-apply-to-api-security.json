@@ -1,119 +1,225 @@
 {
   "query": "What controls apply to API security?",
   "expect_fallback": false,
+  "retrieval_configuration": {
+    "semantic_ranker_requested": true,
+    "semantic_ranker_exercised": true
+  },
+  "outcome_correct": true,
   "trace": {
     "question": "What controls apply to API security?",
-    "correlation_id": "e6fe2e731cca",
+    "correlation_id": "65e7de2b6e99",
+    "moderation": {
+      "question": "What controls apply to API security?",
+      "allowed": true,
+      "category": "none",
+      "reason": "This is a legitimate security question about API controls and is safe to process."
+    },
     "plan": {
       "original_query": "What controls apply to API security?",
-      "interpretation": "Find NIST SP 800-53 Rev 5 security controls that are relevant to securing APIs, including controls that explicitly mention APIs and controls that apply to common API security concerns (authentication, authorization, encryption, input validation, logging, boundary protection, etc.).",
+      "interpretation": "Identify which NIST SP 800-53 Rev 5 controls apply to securing APIs — covering access enforcement and authentication/authorization of users and services, protection of data in transit and input validation/DoS defenses, and audit/monitoring plus secure development and vulnerability management.",
+      "intent": "policy_question",
       "steps": [
         {
           "step_id": 1,
-          "search_query": "API OR \"application programming interface\" OR \"web service\" OR \"service interface\"",
-          "rationale": "Locate controls that explicitly mention APIs, application programming interfaces, or web/service interfaces so we capture guidance that directly references APIs."
+          "search_query": "access enforcement identification and authentication least privilege authorization for service interfaces APIs",
+          "rationale": "Find controls that require enforcing access control, authenticating users and services, and applying least-privilege authorization to service interfaces such as APIs."
         },
         {
           "step_id": 2,
-          "search_query": "authentication OR authorization OR \"access control\" OR encryption OR \"input validation\" OR \"boundary protection\" OR \"secure coding\" OR logging OR audit OR \"session management\"",
-          "rationale": "Retrieve controls addressing common API security topics (identity and access, transport/data protection, input validation, boundary protection, secure development, and logging) that apply even if they don't explicitly mention APIs."
+          "search_query": "confidentiality and integrity of data in transit cryptographic protection input validation boundary protection denial of service protection",
+          "rationale": "Locate controls addressing protection of transmitted data using cryptography, validating inputs, and mitigating denial-of-service attacks at network and application boundaries."
+        },
+        {
+          "step_id": 3,
+          "search_query": "audit and accountability logging monitoring continuous monitoring vulnerability scanning incident response secure software development life cycle supply chain security",
+          "rationale": "Identify controls for audit logging and monitoring, vulnerability management and security testing, incident response, and secure development and acquisition practices relevant to APIs."
         }
       ]
     },
     "retrieval": {
       "plan": {
         "original_query": "What controls apply to API security?",
-        "interpretation": "Find NIST SP 800-53 Rev 5 security controls that are relevant to securing APIs, including controls that explicitly mention APIs and controls that apply to common API security concerns (authentication, authorization, encryption, input validation, logging, boundary protection, etc.).",
+        "interpretation": "Identify which NIST SP 800-53 Rev 5 controls apply to securing APIs — covering access enforcement and authentication/authorization of users and services, protection of data in transit and input validation/DoS defenses, and audit/monitoring plus secure development and vulnerability management.",
+        "intent": "policy_question",
         "steps": [
           {
             "step_id": 1,
-            "search_query": "API OR \"application programming interface\" OR \"web service\" OR \"service interface\"",
-            "rationale": "Locate controls that explicitly mention APIs, application programming interfaces, or web/service interfaces so we capture guidance that directly references APIs."
+            "search_query": "access enforcement identification and authentication least privilege authorization for service interfaces APIs",
+            "rationale": "Find controls that require enforcing access control, authenticating users and services, and applying least-privilege authorization to service interfaces such as APIs."
           },
           {
             "step_id": 2,
-            "search_query": "authentication OR authorization OR \"access control\" OR encryption OR \"input validation\" OR \"boundary protection\" OR \"secure coding\" OR logging OR audit OR \"session management\"",
-            "rationale": "Retrieve controls addressing common API security topics (identity and access, transport/data protection, input validation, boundary protection, secure development, and logging) that apply even if they don't explicitly mention APIs."
+            "search_query": "confidentiality and integrity of data in transit cryptographic protection input validation boundary protection denial of service protection",
+            "rationale": "Locate controls addressing protection of transmitted data using cryptography, validating inputs, and mitigating denial-of-service attacks at network and application boundaries."
+          },
+          {
+            "step_id": 3,
+            "search_query": "audit and accountability logging monitoring continuous monitoring vulnerability scanning incident response secure software development life cycle supply chain security",
+            "rationale": "Identify controls for audit logging and monitoring, vulnerability management and security testing, incident response, and secure development and acquisition practices relevant to APIs."
           }
         ]
       },
       "documents": [
         {
-          "id": "ac-4_17",
-          "control_id": "AC-4(17)",
-          "title": "Information Flow Enforcement — Domain Authentication",
-          "category": "Access Control",
-          "content": "Uniquely identify and authenticate source and destination points by [Assignment: selection: organization, system, application, service, individual] for information transfer.\n\nDiscussion: Attribution is a critical component of a security and privacy concept of operations. The ability to identify source and destination points for information flowing within systems allows the forensic reconstruction of events and encourages policy compliance by attributing policy violations to specific organizations or individuals. Successful domain authentication requires that system labels distinguish among systems, organizations, and individuals involved in preparing, sending, receiving, or disseminating information. Attribution also allows organizations to better maintain the lineage of personally identifiable information processing as it flows through systems and can facilitate consent tracking, as well as correction, deletion, or access requests from individuals.",
-          "score": 0.022929389029741287,
-          "similarity": 0.5546,
-          "reranker_score": null
+          "id": "sa-17_7",
+          "control_id": "SA-17(7)",
+          "title": "Developer Security and Privacy Architecture and Design — Structure for Least Privilege",
+          "category": "System and Services Acquisition",
+          "content": "Require the developer of the system, system component, or system service to structure security-relevant hardware, software, and firmware to facilitate controlling access with least privilege.\n\nDiscussion: The principle of least privilege states that each component is allocated sufficient privileges to accomplish its specified functions but no more (see [SA-8(14)](#sa-8.14) ). Applying the principle of least privilege limits the scope of the component’s actions, which has two desirable effects. First, the security impact of a failure, corruption, or misuse of the system component results in a minimized security impact. Second, the security analysis of the component is simplified. Least privilege is a pervasive principle that is reflected in all aspects of the secure system design. Interfaces used to invoke component capability are available to only certain subsets of the user population, and component design supports a sufficiently fine granularity of privilege decomposition. For example, in the case of an audit mechanism, there may be an interface for the audit manager, who configures the audit settings; an interface for the audit operator, who ensures that audit data is safely collected and stored; and, finally, yet another interface for the audit reviewer, who only has a need to view the audit data that has been collected but no need to perform operations on that data.\n\nIn addition to its manifestations at the system interface, least privilege can be used as a guiding principle for the internal structure of the system itself. One aspect of internal least privilege is to construct modules so that only the elements encapsulated by the module are directly operated upon by the functions within the module. Elements external to a module that may be affected by the module’s operation are indirectly accessed through interaction (e.g., via a function call) with the module that contains those elements. Another aspect of internal least privilege is that the scope of a given module or component includes only those system elements that are necessary for its functionality, and the access modes to the elements (e.g., read, write) are minimal.",
+          "score": 0.028594771400094032,
+          "reranker_score": 2.436706066131592
         },
         {
-          "id": "ac-18_1",
-          "control_id": "AC-18(1)",
-          "title": "Wireless Access — Authentication and Encryption",
-          "category": "Access Control",
-          "content": "Protect wireless access to the system using authentication of [Assignment: selection: users; devices] and encryption.\n\nDiscussion: Wireless networking capabilities represent a significant potential vulnerability that can be exploited by adversaries. To protect systems with wireless access points, strong authentication of users and devices along with strong encryption can reduce susceptibility to threats by adversaries involving wireless technologies.",
-          "score": 0.02698412910103798,
-          "similarity": 0.5349,
-          "reranker_score": null
+          "id": "sc-8_1",
+          "control_id": "SC-8(1)",
+          "title": "Transmission Confidentiality and Integrity — Cryptographic Protection",
+          "category": "System and Communications Protection",
+          "content": "Implement cryptographic mechanisms to [Assignment: selection: prevent unauthorized disclosure of information; detect changes to information] during transmission.\n\nDiscussion: Encryption protects information from unauthorized disclosure and modification during transmission. Cryptographic mechanisms that protect the confidentiality and integrity of information during transmission include TLS and IPSec. Cryptographic mechanisms used to protect information integrity include cryptographic hash functions that have applications in digital signatures, checksums, and message authentication codes.",
+          "score": 0.03205128386616707,
+          "reranker_score": 2.591963529586792
         },
         {
-          "id": "ac-4_21",
-          "control_id": "AC-4(21)",
-          "title": "Information Flow Enforcement — Physical or Logical Separation of Information Flows",
-          "category": "Access Control",
-          "content": "Separate information flows logically or physically using [Assignment: organization-defined mechanisms and/or techniques] to accomplish [Assignment: required separations].\n\nDiscussion: Enforcing the separation of information flows associated with defined types of data can enhance protection by ensuring that information is not commingled while in transit and by enabling flow control by transmission paths that are not otherwise achievable. Types of separable information include inbound and outbound communications traffic, service requests and responses, and information of differing security impact or classification levels.",
-          "score": 0.025448143482208252,
-          "similarity": 0.5018,
-          "reranker_score": null
+          "id": "au-6",
+          "control_id": "AU-6",
+          "title": "Audit Record Review, Analysis, and Reporting",
+          "category": "Audit and Accountability",
+          "content": "a. Review and analyze system audit records [Assignment: frequency] for indications of [Assignment: inappropriate or unusual activity] and the potential impact of the inappropriate or unusual activity;\nb. Report findings to [Assignment: personnel or roles] ; and\nc. Adjust the level of audit record review, analysis, and reporting within the system when there is a change in risk based on law enforcement information, intelligence information, or other credible sources of information.\n\nDiscussion: Audit record review, analysis, and reporting covers information security- and privacy-related logging performed by organizations, including logging that results from the monitoring of account usage, remote access, wireless connectivity, mobile device connection, configuration settings, system component inventory, use of maintenance tools and non-local maintenance, physical access, temperature and humidity, equipment delivery and removal, communications at system interfaces, and use of mobile code or Voice over Internet Protocol (VoIP). Findings can be reported to organizational entities that include the incident response team, help desk, and security or privacy offices. If organizations are prohibited from reviewing and analyzing audit records or unable to conduct such activities, the review or analysis may be carried out by other organizations granted such authority. The frequency, scope, and/or depth of the audit record review, analysis, and reporting may be adjusted to meet organizational needs based on new information received.",
+          "score": 0.023137256503105164,
+          "reranker_score": 2.469494342803955
         },
         {
-          "id": "ac-4_14",
-          "control_id": "AC-4(14)",
-          "title": "Information Flow Enforcement — Security or Privacy Policy Filter Constraints",
+          "id": "ac-6",
+          "control_id": "AC-6",
+          "title": "Least Privilege",
           "category": "Access Control",
-          "content": "When transferring information between different security domains, implement [Assignment: organization-defined security or privacy policy filters] requiring fully enumerated formats that restrict data structure and content.\n\nDiscussion: Data structure and content restrictions reduce the range of potential malicious or unsanctioned content in cross-domain transactions. Security or privacy policy filters that restrict data structures include restricting file sizes and field lengths. Data content policy filters include encoding formats for character sets, restricting character data fields to only contain alpha-numeric characters, prohibiting special characters, and validating schema structures.",
-          "score": 0.024877900257706642,
-          "similarity": 0.5009,
-          "reranker_score": null
+          "content": "Employ the principle of least privilege, allowing only authorized accesses for users (or processes acting on behalf of users) that are necessary to accomplish assigned organizational tasks.\n\nDiscussion: Organizations employ least privilege for specific duties and systems. The principle of least privilege is also applied to system processes, ensuring that the processes have access to systems and operate at privilege levels no higher than necessary to accomplish organizational missions or business functions. Organizations consider the creation of additional processes, roles, and accounts as necessary to achieve least privilege. Organizations apply least privilege to the development, implementation, and operation of organizational systems.",
+          "score": 0.03333333507180214,
+          "reranker_score": 2.422881603240967
         },
         {
-          "id": "ac-14",
-          "control_id": "AC-14",
-          "title": "Permitted Actions Without Identification or Authentication",
-          "category": "Access Control",
-          "content": "a. Identify [Assignment: user actions] that can be performed on the system without identification or authentication consistent with organizational mission and business functions; and\nb. Document and provide supporting rationale in the security plan for the system, user actions not requiring identification or authentication.\n\nDiscussion: Specific user actions may be permitted without identification or authentication if organizations determine that identification and authentication are not required for the specified user actions. Organizations may allow a limited number of user actions without identification or authentication, including when individuals access public websites or other publicly accessible federal systems, when individuals use mobile phones to receive calls, or when facsimiles are received. Organizations identify actions that normally require identification or authentication but may, under certain circumstances, allow identification or authentication mechanisms to be bypassed. Such bypasses may occur, for example, via a software-readable physical switch that commands bypass of the logon functionality and is protected from accidental or unmonitored use. Permitting actions without identification or authentication does not apply to situations where identification and authentication have already occurred and are not repeated but rather to situations where identification and authentication have not yet occurred. Organizations may decide that there are no user actions that can be performed on organizational systems without identification and authentication, and therefore, the value for the assignment operation can be \"none.\"",
-          "score": 0.02584097906947136,
-          "similarity": 0.4907,
-          "reranker_score": null
+          "id": "sa-8_14",
+          "control_id": "SA-8(14)",
+          "title": "Security and Privacy Engineering Principles — Least Privilege",
+          "category": "System and Services Acquisition",
+          "content": "Implement the security design principle of least privilege in [Assignment: systems or system components].\n\nDiscussion: The principle of least privilege states that each system component is allocated sufficient privileges to accomplish its specified functions but no more. Applying the principle of least privilege limits the scope of the component’s actions, which has two desirable effects: the security impact of a failure, corruption, or misuse of the component will have a minimized security impact, and the security analysis of the component will be simplified. Least privilege is a pervasive principle that is reflected in all aspects of the secure system design. Interfaces used to invoke component capability are available to only certain subsets of the user population, and component design supports a sufficiently fine granularity of privilege decomposition. For example, in the case of an audit mechanism, there may be an interface for the audit manager, who configures the audit settings; an interface for the audit operator, who ensures that audit data is safely collected and stored; and, finally, yet another interface for the audit reviewer, who only has need to view the audit data that has been collected but no need to perform operations on that data.\n\nIn addition to its manifestations at the system interface, least privilege can be used as a guiding principle for the internal structure of the system itself. One aspect of internal least privilege is to construct modules so that only the elements encapsulated by the module are directly operated on by the functions within the module. Elements external to a module that may be affected by the module’s operation are indirectly accessed through interaction (e.g., via a function call) with the module that contains those elements. Another aspect of internal least privilege is that the scope of a given module or component includes only those system elements that are necessary for its functionality and that the access modes for the elements (e.g., read, write) are minimal.",
+          "score": 0.03077651560306549,
+          "reranker_score": 2.4014363288879395
         }
       ],
       "has_relevant_results": true
     },
+    "reranked": {
+      "question": "What controls apply to API security?",
+      "plan": {
+        "original_query": "What controls apply to API security?",
+        "interpretation": "Identify which NIST SP 800-53 Rev 5 controls apply to securing APIs — covering access enforcement and authentication/authorization of users and services, protection of data in transit and input validation/DoS defenses, and audit/monitoring plus secure development and vulnerability management.",
+        "intent": "policy_question",
+        "steps": [
+          {
+            "step_id": 1,
+            "search_query": "access enforcement identification and authentication least privilege authorization for service interfaces APIs",
+            "rationale": "Find controls that require enforcing access control, authenticating users and services, and applying least-privilege authorization to service interfaces such as APIs."
+          },
+          {
+            "step_id": 2,
+            "search_query": "confidentiality and integrity of data in transit cryptographic protection input validation boundary protection denial of service protection",
+            "rationale": "Locate controls addressing protection of transmitted data using cryptography, validating inputs, and mitigating denial-of-service attacks at network and application boundaries."
+          },
+          {
+            "step_id": 3,
+            "search_query": "audit and accountability logging monitoring continuous monitoring vulnerability scanning incident response secure software development life cycle supply chain security",
+            "rationale": "Identify controls for audit logging and monitoring, vulnerability management and security testing, incident response, and secure development and acquisition practices relevant to APIs."
+          }
+        ]
+      },
+      "documents": [
+        {
+          "id": "sc-8_1",
+          "control_id": "SC-8(1)",
+          "title": "Transmission Confidentiality and Integrity — Cryptographic Protection",
+          "category": "System and Communications Protection",
+          "content": "Implement cryptographic mechanisms to [Assignment: selection: prevent unauthorized disclosure of information; detect changes to information] during transmission.\n\nDiscussion: Encryption protects information from unauthorized disclosure and modification during transmission. Cryptographic mechanisms that protect the confidentiality and integrity of information during transmission include TLS and IPSec. Cryptographic mechanisms used to protect information integrity include cryptographic hash functions that have applications in digital signatures, checksums, and message authentication codes.",
+          "score": 0.03205128386616707,
+          "reranker_score": 2.591963529586792
+        },
+        {
+          "id": "au-6",
+          "control_id": "AU-6",
+          "title": "Audit Record Review, Analysis, and Reporting",
+          "category": "Audit and Accountability",
+          "content": "a. Review and analyze system audit records [Assignment: frequency] for indications of [Assignment: inappropriate or unusual activity] and the potential impact of the inappropriate or unusual activity;\nb. Report findings to [Assignment: personnel or roles] ; and\nc. Adjust the level of audit record review, analysis, and reporting within the system when there is a change in risk based on law enforcement information, intelligence information, or other credible sources of information.\n\nDiscussion: Audit record review, analysis, and reporting covers information security- and privacy-related logging performed by organizations, including logging that results from the monitoring of account usage, remote access, wireless connectivity, mobile device connection, configuration settings, system component inventory, use of maintenance tools and non-local maintenance, physical access, temperature and humidity, equipment delivery and removal, communications at system interfaces, and use of mobile code or Voice over Internet Protocol (VoIP). Findings can be reported to organizational entities that include the incident response team, help desk, and security or privacy offices. If organizations are prohibited from reviewing and analyzing audit records or unable to conduct such activities, the review or analysis may be carried out by other organizations granted such authority. The frequency, scope, and/or depth of the audit record review, analysis, and reporting may be adjusted to meet organizational needs based on new information received.",
+          "score": 0.023137256503105164,
+          "reranker_score": 2.469494342803955
+        },
+        {
+          "id": "ac-6",
+          "control_id": "AC-6",
+          "title": "Least Privilege",
+          "category": "Access Control",
+          "content": "Employ the principle of least privilege, allowing only authorized accesses for users (or processes acting on behalf of users) that are necessary to accomplish assigned organizational tasks.\n\nDiscussion: Organizations employ least privilege for specific duties and systems. The principle of least privilege is also applied to system processes, ensuring that the processes have access to systems and operate at privilege levels no higher than necessary to accomplish organizational missions or business functions. Organizations consider the creation of additional processes, roles, and accounts as necessary to achieve least privilege. Organizations apply least privilege to the development, implementation, and operation of organizational systems.",
+          "score": 0.03333333507180214,
+          "reranker_score": 2.422881603240967
+        },
+        {
+          "id": "sa-8_14",
+          "control_id": "SA-8(14)",
+          "title": "Security and Privacy Engineering Principles — Least Privilege",
+          "category": "System and Services Acquisition",
+          "content": "Implement the security design principle of least privilege in [Assignment: systems or system components].\n\nDiscussion: The principle of least privilege states that each system component is allocated sufficient privileges to accomplish its specified functions but no more. Applying the principle of least privilege limits the scope of the component’s actions, which has two desirable effects: the security impact of a failure, corruption, or misuse of the component will have a minimized security impact, and the security analysis of the component will be simplified. Least privilege is a pervasive principle that is reflected in all aspects of the secure system design. Interfaces used to invoke component capability are available to only certain subsets of the user population, and component design supports a sufficiently fine granularity of privilege decomposition. For example, in the case of an audit mechanism, there may be an interface for the audit manager, who configures the audit settings; an interface for the audit operator, who ensures that audit data is safely collected and stored; and, finally, yet another interface for the audit reviewer, who only has need to view the audit data that has been collected but no need to perform operations on that data.\n\nIn addition to its manifestations at the system interface, least privilege can be used as a guiding principle for the internal structure of the system itself. One aspect of internal least privilege is to construct modules so that only the elements encapsulated by the module are directly operated on by the functions within the module. Elements external to a module that may be affected by the module’s operation are indirectly accessed through interaction (e.g., via a function call) with the module that contains those elements. Another aspect of internal least privilege is that the scope of a given module or component includes only those system elements that are necessary for its functionality and that the access modes for the elements (e.g., read, write) are minimal.",
+          "score": 0.03077651560306549,
+          "reranker_score": 2.4014363288879395
+        },
+        {
+          "id": "sa-17_7",
+          "control_id": "SA-17(7)",
+          "title": "Developer Security and Privacy Architecture and Design — Structure for Least Privilege",
+          "category": "System and Services Acquisition",
+          "content": "Require the developer of the system, system component, or system service to structure security-relevant hardware, software, and firmware to facilitate controlling access with least privilege.\n\nDiscussion: The principle of least privilege states that each component is allocated sufficient privileges to accomplish its specified functions but no more (see [SA-8(14)](#sa-8.14) ). Applying the principle of least privilege limits the scope of the component’s actions, which has two desirable effects. First, the security impact of a failure, corruption, or misuse of the system component results in a minimized security impact. Second, the security analysis of the component is simplified. Least privilege is a pervasive principle that is reflected in all aspects of the secure system design. Interfaces used to invoke component capability are available to only certain subsets of the user population, and component design supports a sufficiently fine granularity of privilege decomposition. For example, in the case of an audit mechanism, there may be an interface for the audit manager, who configures the audit settings; an interface for the audit operator, who ensures that audit data is safely collected and stored; and, finally, yet another interface for the audit reviewer, who only has a need to view the audit data that has been collected but no need to perform operations on that data.\n\nIn addition to its manifestations at the system interface, least privilege can be used as a guiding principle for the internal structure of the system itself. One aspect of internal least privilege is to construct modules so that only the elements encapsulated by the module are directly operated upon by the functions within the module. Elements external to a module that may be affected by the module’s operation are indirectly accessed through interaction (e.g., via a function call) with the module that contains those elements. Another aspect of internal least privilege is that the scope of a given module or component includes only those system elements that are necessary for its functionality, and the access modes to the elements (e.g., read, write) are minimal.",
+          "score": 0.028594771400094032,
+          "reranker_score": 2.436706066131592
+        }
+      ],
+      "relevance_scores": {
+        "SA-17(7)": 0.8,
+        "SC-8(1)": 1.0,
+        "AU-6": 1.0,
+        "AC-6": 1.0,
+        "SA-8(14)": 0.9
+      }
+    },
+    "faithfulness": [
+      {
+        "faithfulness_score": 1.0,
+        "unsupported_claims": [],
+        "reasoning": "Each factual claim in the answer is directly supported by the cited control texts: SC-8(1) covers cryptographic protections including TLS/IPSec and integrity mechanisms, AU-6 covers audit review/analysis and logging of communications at interfaces, AC-6 and SA-8(14)/SA-17(7) cover least-privilege application and developer structuring for least privilege, and the absence of API-specific topics is correctly noted as not present in the retrieved controls."
+      }
+    ],
     "answer": {
-      "answer": "Applicable controls for API security (based only on the provided controls):\n\n- Uniquely identify and authenticate source and destination points for API information transfers to enable attribution and forensic reconstruction (AC-4(17)).\n\n- Enforce logical or physical separation of API information flows (e.g., inbound vs outbound, different service requests/responses, or data of differing impact) using organization-defined mechanisms (AC-4(21)).\n\n- When APIs transfer information between different security domains, apply organization-defined security/privacy policy filters that restrict data structure and content (e.g., enumerated formats, field lengths, character encoding, schema validation) (AC-4(14)).\n\n- Identify and document any API actions that may be permitted without identification or authentication, with supporting rationale in the system security plan (AC-14).\n\n- If APIs are accessed over wireless networks, protect wireless access using authentication of users/devices and encryption (AC-18(1)).",
+      "answer": "Controls from the provided set that apply to API security (supported aspects only):\n\n- Protect API traffic using cryptographic mechanisms to ensure confidentiality and integrity (e.g., TLS/IPSec; use of hashes, MACs, digital signatures to detect modification) (SC-8(1)).\n\n- Log and review API-related activity: review and analyze audit records for inappropriate or unusual activity, report findings to appropriate roles, and adjust audit review based on changes in risk; include monitoring of communications at system interfaces in logging (AU-6).\n\n- Enforce least privilege for API access and processing: permit only authorized accesses (users and processes) necessary to accomplish tasks; apply least-privilege in development, implementation, and operation of systems that provide the API (AC-6).\n\n- Engineer APIs and their components to support least privilege: design interfaces and internal component structure so privileges are fine-grained and components have only the privileges needed; require developers to structure hardware/software/firmware to facilitate access control by least privilege (SA-8(14); SA-17(7)).\n\nLimits of coverage: the retrieved controls cover encryption for transmission, auditing, and least-privilege design/engineering. They do not provide explicit controls in this set for API-specific topics such as authentication/token management, input validation, rate limiting, API gateways, or client-side security; those topics are not addressed in the provided controls.",
       "citations": [
-        "AC-4(17)",
-        "AC-4(21)",
-        "AC-4(14)",
-        "AC-14",
-        "AC-18(1)"
+        "SC-8(1)",
+        "AU-6",
+        "AC-6",
+        "SA-8(14)",
+        "SA-17(7)"
       ],
       "confidence": "high",
       "grounded": true
     },
-    "duration_ms": 29402,
+    "fallback_reason": null,
+    "duration_ms": 45347,
     "error": null
   },
   "deterministic_checks": {
     "citations_valid": true,
     "num_citations": 5,
-    "token_overlap": 0.762
+    "token_overlap": 0.643,
+    "grounded_answer_has_citations": true
   },
   "llm_judge": {
-    "retrieval_relevance": 5,
+    "retrieval_relevance": 4,
     "groundedness": 5,
-    "justification": "All retrieved controls directly address core API security concerns (authentication/attribution, information-flow separation and filtering, allowed unauthenticated actions, and wireless access protections), and the final answer maps each claim to the corresponding control with only reasonable, supported examples."
+    "justification": "The retrieved controls (encryption/TLS, auditing, and least-privilege design) are directly applicable to API security but are not comprehensive for all API-specific topics (e.g., auth/token management, rate limiting), so relevance is 4; the final answer sticks closely to and cites only those retrieved controls, so groundedness is 5."
   }
 }

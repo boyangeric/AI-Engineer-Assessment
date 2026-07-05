@@ -1,17 +1,19 @@
 # Evaluation Report
 
-| Query | Grounded | Citations valid | Token overlap | Judge: relevance | Judge: groundedness |
-|---|---|---|---|---|---|
-| What controls apply to API security? | True | True | 0.762 | 5/5 | 5/5 |
-| How should sensitive data be protected in cloud systems? | True | True | 0.78 | 4/5 | 5/5 |
-| Summarise the requirements for access control | True | True | 0.784 | 5/5 | 5/5 |
-| What policies relate to logging and monitoring? | True | True | 0.828 | 5/5 | 5/5 |
-| What is the best recipe for chocolate chip cookies? | False | True | 0.0 | 1/5 | 5/5 |
+**Outcome checks passed: 5/5**
+
+| Query | Semantic ranker exercised | Outcome correct | Grounded | Citations valid | Token overlap | Faithfulness | Judge: relevance | Judge: groundedness |
+|---|---|---|---|---|---|---|---|---|
+| What controls apply to API security? | True | True | True | True | 0.643 | 1.00 | 4/5 | 5/5 |
+| How should sensitive data be protected in cloud systems? | True | True | True | True | 0.654 | 0.95 | 4/5 | 5/5 |
+| Summarise the requirements for access control | True | True | True | True | 0.721 | 1.00 | 5/5 | 5/5 |
+| What policies relate to logging and monitoring? | True | True | True | True | 0.757 | 1.00 | 5/5 | 5/5 |
+| What is the best recipe for chocolate chip cookies? | False | True | False | N/A | 0.0 | - | 1/5 | 5/5 |
 
 ## Judge justifications
 
-- **What controls apply to API security?** — All retrieved controls directly address core API security concerns (authentication/attribution, information-flow separation and filtering, allowed unauthenticated actions, and wireless access protections), and the final answer maps each claim to the corresponding control with only reasonable, supported examples.
-- **How should sensitive data be protected in cloud systems?** — The retrieved controls directly support key protections (encryption at rest, media/data sanitization, dual authorization, separation of duties and sanitization on domain transfers) though they do not cover every aspect of cloud security (e.g., encryption in transit, key management, access logging), and every claim in the answer is traceable to one of the provided controls.
-- **Summarise the requirements for access control** — All retrieved AC-3 control enhancements (MAC, DAC, RBAC, ABAC, and combined enforcement) directly address access-control requirements and each claim in the summary can be traced to the corresponding cited controls (AC-3(3), AC-3(4), AC-3(7), AC-3(13), AC-3(15)).
-- **What policies relate to logging and monitoring?** — The retrieved controls (AU-6, AU-6(4), AU-6(5), AU-4, SI-4) directly address audit logging, centralized/integrated analysis, storage capacity, and system monitoring, and the final answer accurately paraphrases those controls with clear citations.
-- **What is the best recipe for chocolate chip cookies?** — The retrieved NIST SP 800-53 security controls about rules of behavior and external system use are unrelated to baking, so declining to provide a recipe due to lack of relevant policy material was the correct response.
+- **What controls apply to API security?** — The retrieved controls (encryption/TLS, auditing, and least-privilege design) are directly applicable to API security but are not comprehensive for all API-specific topics (e.g., auth/token management, rate limiting), so relevance is 4; the final answer sticks closely to and cites only those retrieved controls, so groundedness is 5.
+- **How should sensitive data be protected in cloud systems?** — The retrieved controls (encryption at rest, least privilege, developer design for least privilege, separation of duties, plus an audit-related control) are directly relevant to protecting sensitive cloud data though they omit other important areas (e.g., encryption in transit, key management, tenant isolation), and the final answer sticks closely to and cites only the provided controls.
+- **Summarise the requirements for access control** — The final answer directly reflects and cites the retrieved AC controls (least privilege, privileged account restriction, separation of duties, account usage conditions, and session termination) with no unsupported claims beyond those controls.
+- **What policies relate to logging and monitoring?** — The retrieved controls (AU-6 and its enhancements, SI-4, and IR-4(14)) directly address audit/log review, centralized and integrated analysis, active system monitoring, and SOC responsibilities, and the final answer accurately summarizes those controls with claims traceable to the retrieved excerpts.
+- **What is the best recipe for chocolate chip cookies?** — No security-policy controls were retrieved and the user’s question about a cooking recipe is unrelated to the indexed security policy corpus, so declining and redirecting to appropriate security topics was the correct behavior.

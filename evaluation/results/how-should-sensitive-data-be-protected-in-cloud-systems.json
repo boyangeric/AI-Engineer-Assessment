@@ -1,92 +1,74 @@
 {
   "query": "How should sensitive data be protected in cloud systems?",
   "expect_fallback": false,
+  "retrieval_configuration": {
+    "semantic_ranker_requested": true,
+    "semantic_ranker_exercised": true
+  },
+  "outcome_correct": true,
   "trace": {
     "question": "How should sensitive data be protected in cloud systems?",
-    "correlation_id": "72f25ebde242",
+    "correlation_id": "e945bbf49d19",
+    "moderation": {
+      "question": "How should sensitive data be protected in cloud systems?",
+      "allowed": true,
+      "category": "none",
+      "reason": "Legitimate request for guidance on securing sensitive data in cloud environments; does not ask for harmful or abusive instructions."
+    },
     "plan": {
       "original_query": "How should sensitive data be protected in cloud systems?",
-      "interpretation": "Find NIST SP 800-53 Rev 5 security controls and guidance that address protecting sensitive data in cloud environments, including encryption, key management, access controls, data handling, and responsibilities with cloud providers and monitoring.",
+      "interpretation": "The user wants security controls and requirements (technical and organizational) from the NIST SP 800-53 control catalog describing how to protect sensitive data in cloud-hosted systems across authentication/access controls, confidentiality/integrity of data, and monitoring/data lifecycle.",
+      "intent": "policy_question",
       "steps": [
         {
           "step_id": 1,
-          "search_query": "encryption data at rest in transit key management cryptographic mechanisms",
-          "rationale": "Retrieve controls that mandate or guide use of cryptography and key management to protect sensitive data both at rest and in transit."
+          "search_query": "access enforcement least privilege identify and authenticate separation of duties",
+          "rationale": "Find controls that restrict who and what can access sensitive cloud data — enforcing least privilege, strong identification and authentication, and separation of duties."
         },
         {
           "step_id": 2,
-          "search_query": "access control least privilege separation of duties identification authentication data labeling handling media protection sanitization",
-          "rationale": "Find controls addressing who may access sensitive data, how access is authorized and logged, and how data is classified, handled, and sanitized throughout its lifecycle."
+          "search_query": "cryptographic protection of information confidentiality integrity data at rest data in transit cryptographic key management media protection media sanitization",
+          "rationale": "Locate controls for protecting data confidentiality and integrity in transit and at rest, plus cryptographic key management, media protection, and secure media sanitization/disposal."
         },
         {
           "step_id": 3,
-          "search_query": "cloud service provider shared responsibility contracts external system services supply chain audit logging continuous monitoring",
-          "rationale": "Locate controls about responsibilities and contractual requirements with external/cloud service providers plus logging, monitoring, and supply-chain considerations for cloud-hosted sensitive data."
+          "search_query": "audit records audit logging continuous monitoring incident response contingency planning data retention and disposal secure development",
+          "rationale": "Retrieve controls for auditing and monitoring access to sensitive data, incident response and contingency planning, data retention and secure disposal, and secure development practices for cloud services."
         }
       ]
     },
     "retrieval": {
       "plan": {
         "original_query": "How should sensitive data be protected in cloud systems?",
-        "interpretation": "Find NIST SP 800-53 Rev 5 security controls and guidance that address protecting sensitive data in cloud environments, including encryption, key management, access controls, data handling, and responsibilities with cloud providers and monitoring.",
+        "interpretation": "The user wants security controls and requirements (technical and organizational) from the NIST SP 800-53 control catalog describing how to protect sensitive data in cloud-hosted systems across authentication/access controls, confidentiality/integrity of data, and monitoring/data lifecycle.",
+        "intent": "policy_question",
         "steps": [
           {
             "step_id": 1,
-            "search_query": "encryption data at rest in transit key management cryptographic mechanisms",
-            "rationale": "Retrieve controls that mandate or guide use of cryptography and key management to protect sensitive data both at rest and in transit."
+            "search_query": "access enforcement least privilege identify and authenticate separation of duties",
+            "rationale": "Find controls that restrict who and what can access sensitive cloud data — enforcing least privilege, strong identification and authentication, and separation of duties."
           },
           {
             "step_id": 2,
-            "search_query": "access control least privilege separation of duties identification authentication data labeling handling media protection sanitization",
-            "rationale": "Find controls addressing who may access sensitive data, how access is authorized and logged, and how data is classified, handled, and sanitized throughout its lifecycle."
+            "search_query": "cryptographic protection of information confidentiality integrity data at rest data in transit cryptographic key management media protection media sanitization",
+            "rationale": "Locate controls for protecting data confidentiality and integrity in transit and at rest, plus cryptographic key management, media protection, and secure media sanitization/disposal."
           },
           {
             "step_id": 3,
-            "search_query": "cloud service provider shared responsibility contracts external system services supply chain audit logging continuous monitoring",
-            "rationale": "Locate controls about responsibilities and contractual requirements with external/cloud service providers plus logging, monitoring, and supply-chain considerations for cloud-hosted sensitive data."
+            "search_query": "audit records audit logging continuous monitoring incident response contingency planning data retention and disposal secure development",
+            "rationale": "Retrieve controls for auditing and monitoring access to sensitive data, incident response and contingency planning, data retention and secure disposal, and secure development practices for cloud services."
           }
         ]
       },
       "documents": [
-        {
-          "id": "mp-6_7",
-          "control_id": "MP-6(7)",
-          "title": "Media Sanitization — Dual Authorization",
-          "category": "Media Protection",
-          "content": "Enforce dual authorization for the sanitization of [Assignment: system media].\n\nDiscussion: Organizations employ dual authorization to help ensure that system media sanitization cannot occur unless two technically qualified individuals conduct the designated task. Individuals who sanitize system media possess sufficient skills and expertise to determine if the proposed sanitization reflects applicable federal and organizational standards, policies, and procedures. Dual authorization also helps to ensure that sanitization occurs as intended, protecting against errors and false claims of having performed the sanitization actions. Dual authorization may also be known as two-person control. To reduce the risk of collusion, organizations consider rotating dual authorization duties to other individuals.",
-          "score": 0.03306011110544205,
-          "similarity": 0.6127,
-          "reranker_score": null
-        },
-        {
-          "id": "mp-6",
-          "control_id": "MP-6",
-          "title": "Media Sanitization",
-          "category": "Media Protection",
-          "content": "a. Sanitize [Assignment: organization-defined system media] prior to disposal, release out of organizational control, or release for reuse using [Assignment: organization-defined sanitization techniques and procedures] ; and\nb. Employ sanitization mechanisms with the strength and integrity commensurate with the security category or classification of the information.\n\nDiscussion: Media sanitization applies to all digital and non-digital system media subject to disposal or reuse, whether or not the media is considered removable. Examples include digital media in scanners, copiers, printers, notebook computers, workstations, network components, mobile devices, and non-digital media (e.g., paper and microfilm). The sanitization process removes information from system media such that the information cannot be retrieved or reconstructed. Sanitization techniques—including clearing, purging, cryptographic erase, de-identification of personally identifiable information, and destruction—prevent the disclosure of information to unauthorized individuals when such media is reused or released for disposal. Organizations determine the appropriate sanitization methods, recognizing that destruction is sometimes necessary when other methods cannot be applied to media requiring sanitization. Organizations use discretion on the employment of approved sanitization techniques and procedures for media that contains information deemed to be in the public domain or publicly releasable or information deemed to have no adverse impact on organizations or individuals if released for reuse or disposal. Sanitization of non-digital media includes destruction, removing a classified appendix from an otherwise unclassified document, or redacting selected sections or words from a document by obscuring the redacted sections or words in a manner equivalent in effectiveness to removing them from the document. NSA standards and policies control the sanitization process for media that contains classified information. NARA policies control the sanitization process for controlled unclassified information.",
-          "score": 0.032522473484277725,
-          "similarity": 0.6054,
-          "reranker_score": null
-        },
-        {
-          "id": "ac-4_25",
-          "control_id": "AC-4(25)",
-          "title": "Information Flow Enforcement — Data Sanitization",
-          "category": "Access Control",
-          "content": "When transferring information between different security domains, sanitize data to minimize [Assignment: selection: delivery of malicious content, command and control of malicious code, malicious code augmentation, and steganography-encoded data; spillage of sensitive information] in accordance with [Assignment: policy].\n\nDiscussion: Data sanitization is the process of irreversibly removing or destroying data stored on a memory device (e.g., hard drives, flash memory/solid state drives, mobile devices, CDs, and DVDs) or in hard copy form.",
-          "score": 0.03079839050769806,
-          "similarity": 0.5934,
-          "reranker_score": null
-        },
         {
           "id": "ac-5",
           "control_id": "AC-5",
           "title": "Separation of Duties",
           "category": "Access Control",
           "content": "a. Identify and document [Assignment: duties of individuals] ; and\nb. Define system access authorizations to support separation of duties.\n\nDiscussion: Separation of duties addresses the potential for abuse of authorized privileges and helps to reduce the risk of malevolent activity without collusion. Separation of duties includes dividing mission or business functions and support functions among different individuals or roles, conducting system support functions with different individuals, and ensuring that security personnel who administer access control functions do not also administer audit functions. Because separation of duty violations can span systems and application domains, organizations consider the entirety of systems and system components when developing policy on separation of duties. Separation of duties is enforced through the account management activities in [AC-2](#ac-2) , access control mechanisms in [AC-3](#ac-3) , and identity management activities in [IA-2](#ia-2), [IA-4](#ia-4) , and [IA-12](#ia-12).",
-          "score": 0.03229166567325592,
-          "similarity": 0.59,
-          "reranker_score": null
+          "score": 0.03306011110544205,
+          "reranker_score": 2.6557679176330566
         },
         {
           "id": "sc-28_1",
@@ -94,36 +76,143 @@
           "title": "Protection of Information at Rest — Cryptographic Protection",
           "category": "System and Communications Protection",
           "content": "Implement cryptographic mechanisms to prevent unauthorized disclosure and modification of the following information at rest on [Assignment: system components or media]: [Assignment: information].\n\nDiscussion: The selection of cryptographic mechanisms is based on the need to protect the confidentiality and integrity of organizational information. The strength of mechanism is commensurate with the security category or classification of the information. Organizations have the flexibility to encrypt information on system components or media or encrypt data structures, including files, records, or fields.",
+          "score": 0.03333333507180214,
+          "reranker_score": 2.813152313232422
+        },
+        {
+          "id": "au-6_1",
+          "control_id": "AU-6(1)",
+          "title": "Audit Record Review, Analysis, and Reporting — Automated Process Integration",
+          "category": "Audit and Accountability",
+          "content": "Integrate audit record review, analysis, and reporting processes using [Assignment: automated mechanisms].\n\nDiscussion: Organizational processes that benefit from integrated audit record review, analysis, and reporting include incident response, continuous monitoring, contingency planning, investigation and response to suspicious activities, and Inspector General audits.",
+          "score": 0.025474825873970985,
+          "reranker_score": 2.6281192302703857
+        },
+        {
+          "id": "ac-6",
+          "control_id": "AC-6",
+          "title": "Least Privilege",
+          "category": "Access Control",
+          "content": "Employ the principle of least privilege, allowing only authorized accesses for users (or processes acting on behalf of users) that are necessary to accomplish assigned organizational tasks.\n\nDiscussion: Organizations employ least privilege for specific duties and systems. The principle of least privilege is also applied to system processes, ensuring that the processes have access to systems and operate at privilege levels no higher than necessary to accomplish organizational missions or business functions. Organizations consider the creation of additional processes, roles, and accounts as necessary to achieve least privilege. Organizations apply least privilege to the development, implementation, and operation of organizational systems.",
           "score": 0.03306011110544205,
-          "similarity": 0.5783,
-          "reranker_score": null
+          "reranker_score": 2.4494669437408447
+        },
+        {
+          "id": "sa-17_7",
+          "control_id": "SA-17(7)",
+          "title": "Developer Security and Privacy Architecture and Design — Structure for Least Privilege",
+          "category": "System and Services Acquisition",
+          "content": "Require the developer of the system, system component, or system service to structure security-relevant hardware, software, and firmware to facilitate controlling access with least privilege.\n\nDiscussion: The principle of least privilege states that each component is allocated sufficient privileges to accomplish its specified functions but no more (see [SA-8(14)](#sa-8.14) ). Applying the principle of least privilege limits the scope of the component’s actions, which has two desirable effects. First, the security impact of a failure, corruption, or misuse of the system component results in a minimized security impact. Second, the security analysis of the component is simplified. Least privilege is a pervasive principle that is reflected in all aspects of the secure system design. Interfaces used to invoke component capability are available to only certain subsets of the user population, and component design supports a sufficiently fine granularity of privilege decomposition. For example, in the case of an audit mechanism, there may be an interface for the audit manager, who configures the audit settings; an interface for the audit operator, who ensures that audit data is safely collected and stored; and, finally, yet another interface for the audit reviewer, who only has a need to view the audit data that has been collected but no need to perform operations on that data.\n\nIn addition to its manifestations at the system interface, least privilege can be used as a guiding principle for the internal structure of the system itself. One aspect of internal least privilege is to construct modules so that only the elements encapsulated by the module are directly operated upon by the functions within the module. Elements external to a module that may be affected by the module’s operation are indirectly accessed through interaction (e.g., via a function call) with the module that contains those elements. Another aspect of internal least privilege is that the scope of a given module or component includes only those system elements that are necessary for its functionality, and the access modes to the elements (e.g., read, write) are minimal.",
+          "score": 0.028258707374334335,
+          "reranker_score": 2.365812063217163
         }
       ],
       "has_relevant_results": true
     },
+    "reranked": {
+      "question": "How should sensitive data be protected in cloud systems?",
+      "plan": {
+        "original_query": "How should sensitive data be protected in cloud systems?",
+        "interpretation": "The user wants security controls and requirements (technical and organizational) from the NIST SP 800-53 control catalog describing how to protect sensitive data in cloud-hosted systems across authentication/access controls, confidentiality/integrity of data, and monitoring/data lifecycle.",
+        "intent": "policy_question",
+        "steps": [
+          {
+            "step_id": 1,
+            "search_query": "access enforcement least privilege identify and authenticate separation of duties",
+            "rationale": "Find controls that restrict who and what can access sensitive cloud data — enforcing least privilege, strong identification and authentication, and separation of duties."
+          },
+          {
+            "step_id": 2,
+            "search_query": "cryptographic protection of information confidentiality integrity data at rest data in transit cryptographic key management media protection media sanitization",
+            "rationale": "Locate controls for protecting data confidentiality and integrity in transit and at rest, plus cryptographic key management, media protection, and secure media sanitization/disposal."
+          },
+          {
+            "step_id": 3,
+            "search_query": "audit records audit logging continuous monitoring incident response contingency planning data retention and disposal secure development",
+            "rationale": "Retrieve controls for auditing and monitoring access to sensitive data, incident response and contingency planning, data retention and secure disposal, and secure development practices for cloud services."
+          }
+        ]
+      },
+      "documents": [
+        {
+          "id": "sc-28_1",
+          "control_id": "SC-28(1)",
+          "title": "Protection of Information at Rest — Cryptographic Protection",
+          "category": "System and Communications Protection",
+          "content": "Implement cryptographic mechanisms to prevent unauthorized disclosure and modification of the following information at rest on [Assignment: system components or media]: [Assignment: information].\n\nDiscussion: The selection of cryptographic mechanisms is based on the need to protect the confidentiality and integrity of organizational information. The strength of mechanism is commensurate with the security category or classification of the information. Organizations have the flexibility to encrypt information on system components or media or encrypt data structures, including files, records, or fields.",
+          "score": 0.03333333507180214,
+          "reranker_score": 2.813152313232422
+        },
+        {
+          "id": "ac-6",
+          "control_id": "AC-6",
+          "title": "Least Privilege",
+          "category": "Access Control",
+          "content": "Employ the principle of least privilege, allowing only authorized accesses for users (or processes acting on behalf of users) that are necessary to accomplish assigned organizational tasks.\n\nDiscussion: Organizations employ least privilege for specific duties and systems. The principle of least privilege is also applied to system processes, ensuring that the processes have access to systems and operate at privilege levels no higher than necessary to accomplish organizational missions or business functions. Organizations consider the creation of additional processes, roles, and accounts as necessary to achieve least privilege. Organizations apply least privilege to the development, implementation, and operation of organizational systems.",
+          "score": 0.03306011110544205,
+          "reranker_score": 2.4494669437408447
+        },
+        {
+          "id": "sa-17_7",
+          "control_id": "SA-17(7)",
+          "title": "Developer Security and Privacy Architecture and Design — Structure for Least Privilege",
+          "category": "System and Services Acquisition",
+          "content": "Require the developer of the system, system component, or system service to structure security-relevant hardware, software, and firmware to facilitate controlling access with least privilege.\n\nDiscussion: The principle of least privilege states that each component is allocated sufficient privileges to accomplish its specified functions but no more (see [SA-8(14)](#sa-8.14) ). Applying the principle of least privilege limits the scope of the component’s actions, which has two desirable effects. First, the security impact of a failure, corruption, or misuse of the system component results in a minimized security impact. Second, the security analysis of the component is simplified. Least privilege is a pervasive principle that is reflected in all aspects of the secure system design. Interfaces used to invoke component capability are available to only certain subsets of the user population, and component design supports a sufficiently fine granularity of privilege decomposition. For example, in the case of an audit mechanism, there may be an interface for the audit manager, who configures the audit settings; an interface for the audit operator, who ensures that audit data is safely collected and stored; and, finally, yet another interface for the audit reviewer, who only has a need to view the audit data that has been collected but no need to perform operations on that data.\n\nIn addition to its manifestations at the system interface, least privilege can be used as a guiding principle for the internal structure of the system itself. One aspect of internal least privilege is to construct modules so that only the elements encapsulated by the module are directly operated upon by the functions within the module. Elements external to a module that may be affected by the module’s operation are indirectly accessed through interaction (e.g., via a function call) with the module that contains those elements. Another aspect of internal least privilege is that the scope of a given module or component includes only those system elements that are necessary for its functionality, and the access modes to the elements (e.g., read, write) are minimal.",
+          "score": 0.028258707374334335,
+          "reranker_score": 2.365812063217163
+        },
+        {
+          "id": "ac-5",
+          "control_id": "AC-5",
+          "title": "Separation of Duties",
+          "category": "Access Control",
+          "content": "a. Identify and document [Assignment: duties of individuals] ; and\nb. Define system access authorizations to support separation of duties.\n\nDiscussion: Separation of duties addresses the potential for abuse of authorized privileges and helps to reduce the risk of malevolent activity without collusion. Separation of duties includes dividing mission or business functions and support functions among different individuals or roles, conducting system support functions with different individuals, and ensuring that security personnel who administer access control functions do not also administer audit functions. Because separation of duty violations can span systems and application domains, organizations consider the entirety of systems and system components when developing policy on separation of duties. Separation of duties is enforced through the account management activities in [AC-2](#ac-2) , access control mechanisms in [AC-3](#ac-3) , and identity management activities in [IA-2](#ia-2), [IA-4](#ia-4) , and [IA-12](#ia-12).",
+          "score": 0.03306011110544205,
+          "reranker_score": 2.6557679176330566
+        }
+      ],
+      "relevance_scores": {
+        "AC-5": 0.5,
+        "SC-28(1)": 1.0,
+        "AU-6(1)": 0.4,
+        "AC-6": 0.9,
+        "SA-17(7)": 0.7
+      }
+    },
+    "faithfulness": [
+      {
+        "faithfulness_score": 0.95,
+        "unsupported_claims": [
+          "Key, supported protections for sensitive cloud data (based only on the provided controls):",
+          "Encrypt information at rest using approved cryptographic mechanisms, with algorithm strength commensurate with the data’s classification; encryption may be applied to system components/media or to data structures (files, records, fields) (SC-28(1))."
+        ],
+        "reasoning": "All substantive technical points map to the provided controls (encryption at rest, least privilege, developer design for least privilege, separation of duties) but the answer introduces the unstated context of 'cloud' and adds the qualifier 'approved' for cryptographic mechanisms, neither of which are specified in the retrieved documents."
+      }
+    ],
     "answer": {
-      "answer": "Concise guidance based only on the provided controls:\n\n- Protect stored (at‑rest) sensitive data with cryptography: implement cryptographic mechanisms sized to the information’s security category/classification to prevent unauthorized disclosure or modification of data at rest on system components or media (SC-28(1)).\n\n- Sanitize media before disposal, reuse, or release: sanitize organization‑defined system media using organization‑defined techniques (e.g., clearing, purging, cryptographic erase, de‑identification, destruction) and employ sanitization mechanisms whose strength and integrity are commensurate with the information’s classification (MP-6). Sanitation applies to digital and non‑digital media (e.g., printers, network components, mobile devices, paper) (MP-6).\n\n- Enforce sanitation when transferring across domains: when transferring information between security domains, sanitize data to minimize delivery of malicious content and spillage of sensitive information in accordance with policy (AC-4(25)).\n\n- Use dual authorization for sanitization actions when appropriate: require two technically qualified individuals to perform system media sanitization to reduce errors, false claims, and collusion (MP-6(7)).\n\n- Enforce separation of duties for access and sanitization processes: identify and document duties and define access authorizations to reduce abuse of privileges and collusion (AC-5).\n\nThese measures should be applied consistent with organization policies and the information’s security classification. ",
+      "answer": "Key, supported protections for sensitive cloud data (based only on the provided controls):\n\n- Encrypt information at rest using approved cryptographic mechanisms, with algorithm strength commensurate with the data’s classification; encryption may be applied to system components/media or to data structures (files, records, fields) (SC-28(1)).\n\n- Apply the principle of least privilege: allow only the accesses (users or processes) necessary to accomplish assigned tasks; create roles/accounts or processes as needed and apply least privilege across development, implementation, and operation (AC-6).\n\n- Require system and service developers to design hardware/software/firmware so access can be controlled with least privilege: provide fine-grained privilege decomposition, separate interfaces for different roles, and modular internal structure so components only have necessary scope and minimal access modes (SA-17(7)).\n\n- Enforce separation of duties by identifying duties and defining access authorizations to reduce abuse risk; implement this via account management and access control mechanisms (AC-5).\n\nLimitations / scope: the provided controls address encryption at rest, access controls (least privilege), developer design to enable least privilege, and separation of duties. They do not provide details on key management, protection in transit, audit/logging, tenant isolation specifics, or cloud service‑provider responsibilities — additional controls/guidance would be needed for those topics.\n",
       "citations": [
         "SC-28(1)",
-        "MP-6",
-        "MP-6(7)",
-        "AC-4(25)",
+        "AC-6",
+        "SA-17(7)",
         "AC-5"
       ],
       "confidence": "high",
       "grounded": true
     },
-    "duration_ms": 31370,
+    "fallback_reason": null,
+    "duration_ms": 50042,
     "error": null
   },
   "deterministic_checks": {
     "citations_valid": true,
-    "num_citations": 5,
-    "token_overlap": 0.78
+    "num_citations": 4,
+    "token_overlap": 0.654,
+    "grounded_answer_has_citations": true
   },
   "llm_judge": {
     "retrieval_relevance": 4,
     "groundedness": 5,
-    "justification": "The retrieved controls directly support key protections (encryption at rest, media/data sanitization, dual authorization, separation of duties and sanitization on domain transfers) though they do not cover every aspect of cloud security (e.g., encryption in transit, key management, access logging), and every claim in the answer is traceable to one of the provided controls."
+    "justification": "The retrieved controls (encryption at rest, least privilege, developer design for least privilege, separation of duties, plus an audit-related control) are directly relevant to protecting sensitive cloud data though they omit other important areas (e.g., encryption in transit, key management, tenant isolation), and the final answer sticks closely to and cites only the provided controls."
   }
 }

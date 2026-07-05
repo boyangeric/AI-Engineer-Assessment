@@ -1,39 +1,62 @@
 {
   "query": "What policies relate to logging and monitoring?",
   "expect_fallback": false,
+  "retrieval_configuration": {
+    "semantic_ranker_requested": true,
+    "semantic_ranker_exercised": true
+  },
+  "outcome_correct": true,
   "trace": {
     "question": "What policies relate to logging and monitoring?",
-    "correlation_id": "a20a1c834dd4",
+    "correlation_id": "b7bb662b514a",
+    "moderation": {
+      "question": "What policies relate to logging and monitoring?",
+      "allowed": true,
+      "category": "none",
+      "reason": "This is a general security/compliance question about logging and monitoring policies and is safe to process."
+    },
     "plan": {
       "original_query": "What policies relate to logging and monitoring?",
-      "interpretation": "Identify the NIST SP 800-53 Rev 5 security controls (policies/controls) that cover logging, audit records, log review/analysis, retention, and continuous/system monitoring and detection.",
+      "interpretation": "User wants the NIST SP 800-53 controls and control families that govern system logging, audit records, continuous monitoring, and related monitoring and incident-detection activities.",
+      "intent": "policy_question",
       "steps": [
         {
           "step_id": 1,
-          "search_query": "AU Audit and Accountability audit logging audit events audit records log retention review analysis reporting",
-          "rationale": "Find controls in the Audit and Accountability (AU) family that define requirements for creating, retaining, reviewing, and reporting audit logs."
+          "search_query": "audit records, audit review analysis and reporting",
+          "rationale": "Locate AU-family controls that specify creation, content, protection, retention, review, and reporting of audit logs and audit records."
         },
         {
           "step_id": 2,
-          "search_query": "continuous monitoring CA-7 system monitoring SI-4 monitoring intrusion detection IR-5 security monitoring log analysis",
-          "rationale": "Retrieve controls related to continuous monitoring, system and information monitoring, intrusion/incident detection, and log analysis across CA, SI, and IR families."
+          "search_query": "information system monitoring, continuous monitoring",
+          "rationale": "Find controls about ongoing system monitoring, real-time detection, and continuous monitoring programs for security-relevant events and status."
+        },
+        {
+          "step_id": 3,
+          "search_query": "incident monitoring, incident response and analysis, event correlation",
+          "rationale": "Identify controls that connect monitoring to incident detection, analysis, reporting, and response (including correlation and escalation of monitored events)."
         }
       ]
     },
     "retrieval": {
       "plan": {
         "original_query": "What policies relate to logging and monitoring?",
-        "interpretation": "Identify the NIST SP 800-53 Rev 5 security controls (policies/controls) that cover logging, audit records, log review/analysis, retention, and continuous/system monitoring and detection.",
+        "interpretation": "User wants the NIST SP 800-53 controls and control families that govern system logging, audit records, continuous monitoring, and related monitoring and incident-detection activities.",
+        "intent": "policy_question",
         "steps": [
           {
             "step_id": 1,
-            "search_query": "AU Audit and Accountability audit logging audit events audit records log retention review analysis reporting",
-            "rationale": "Find controls in the Audit and Accountability (AU) family that define requirements for creating, retaining, reviewing, and reporting audit logs."
+            "search_query": "audit records, audit review analysis and reporting",
+            "rationale": "Locate AU-family controls that specify creation, content, protection, retention, review, and reporting of audit logs and audit records."
           },
           {
             "step_id": 2,
-            "search_query": "continuous monitoring CA-7 system monitoring SI-4 monitoring intrusion detection IR-5 security monitoring log analysis",
-            "rationale": "Retrieve controls related to continuous monitoring, system and information monitoring, intrusion/incident detection, and log analysis across CA, SI, and IR families."
+            "search_query": "information system monitoring, continuous monitoring",
+            "rationale": "Find controls about ongoing system monitoring, real-time detection, and continuous monitoring programs for security-relevant events and status."
+          },
+          {
+            "step_id": 3,
+            "search_query": "incident monitoring, incident response and analysis, event correlation",
+            "rationale": "Identify controls that connect monitoring to incident detection, analysis, reporting, and response (including correlation and escalation of monitored events)."
           }
         ]
       },
@@ -44,9 +67,8 @@
           "title": "Audit Record Review, Analysis, and Reporting",
           "category": "Audit and Accountability",
           "content": "a. Review and analyze system audit records [Assignment: frequency] for indications of [Assignment: inappropriate or unusual activity] and the potential impact of the inappropriate or unusual activity;\nb. Report findings to [Assignment: personnel or roles] ; and\nc. Adjust the level of audit record review, analysis, and reporting within the system when there is a change in risk based on law enforcement information, intelligence information, or other credible sources of information.\n\nDiscussion: Audit record review, analysis, and reporting covers information security- and privacy-related logging performed by organizations, including logging that results from the monitoring of account usage, remote access, wireless connectivity, mobile device connection, configuration settings, system component inventory, use of maintenance tools and non-local maintenance, physical access, temperature and humidity, equipment delivery and removal, communications at system interfaces, and use of mobile code or Voice over Internet Protocol (VoIP). Findings can be reported to organizational entities that include the incident response team, help desk, and security or privacy offices. If organizations are prohibited from reviewing and analyzing audit records or unable to conduct such activities, the review or analysis may be carried out by other organizations granted such authority. The frequency, scope, and/or depth of the audit record review, analysis, and reporting may be adjusted to meet organizational needs based on new information received.",
-          "score": 0.03306011110544205,
-          "similarity": 0.6882,
-          "reranker_score": null
+          "score": 0.03333333507180214,
+          "reranker_score": 3.4873526096343994
         },
         {
           "id": "si-4",
@@ -54,19 +76,17 @@
           "title": "System Monitoring",
           "category": "System and Information Integrity",
           "content": "a. Monitor the system to detect:\n1. Attacks and indicators of potential attacks in accordance with the following monitoring objectives: [Assignment: monitoring objectives] ; and\n2. Unauthorized local, network, and remote connections;\nb. Identify unauthorized use of the system through the following techniques and methods: [Assignment: techniques and methods];\nc. Invoke internal monitoring capabilities or deploy monitoring devices:\n1. Strategically within the system to collect organization-determined essential information; and\n2. At ad hoc locations within the system to track specific types of transactions of interest to the organization;\nd. Analyze detected events and anomalies;\ne. Adjust the level of system monitoring activity when there is a change in risk to organizational operations and assets, individuals, other organizations, or the Nation;\nf. Obtain legal opinion regarding system monitoring activities; and\ng. Provide [Assignment: system monitoring information] to [Assignment: personnel or roles] [Assignment: selection: as needed; {{ insert: param, si-04_odp.06 }} ].\n\nDiscussion: System monitoring includes external and internal monitoring. External monitoring includes the observation of events occurring at external interfaces to the system. Internal monitoring includes the observation of events occurring within the system. Organizations monitor systems by observing audit activities in real time or by observing other system aspects such as access patterns, characteristics of access, and other actions. The monitoring objectives guide and inform the determination of the events. System monitoring capabilities are achieved through a variety of tools and techniques, including intrusion detection and prevention systems, malicious code protection software, scanning tools, audit record monitoring software, and network monitoring software.\n\nDepending on the security architecture, the distribution and configuration of monitoring devices may impact throughput at key internal and external boundaries as well as at other locations across a network due to the introduction of network throughput latency. If throughput management is needed, such devices are strategically located and deployed as part of an established organization-wide security architecture. Strategic locations for monitoring devices include selected perimeter locations and near key servers and server farms that support critical applications. Monitoring devices are typically employed at the managed interfaces associated with controls [SC-7](#sc-7) and [AC-17](#ac-17) . The information collected is a function of the organizational monitoring objectives and the capability of systems to support such objectives. Specific types of transactions of interest include Hypertext Transfer Protocol (HTTP) traffic that bypasses HTTP proxies. System monitoring is an integral part of organizational continuous monitoring and incident response programs, and output from system monitoring serves as input to those programs. System monitoring requirements, including the need for specific types of system monitoring, may be referenced in other controls (e.g., [AC-2g](#ac-2_smt.g), [AC-2(7)](#ac-2.7), [AC-2(12)(a)](#ac-2.12_smt.a), [AC-17(1)](#ac-17.1), [AU-13](#au-13), [AU-13(1)](#au-13.1), [AU-13(2)](#au-13.2), [CM-3f](#cm-3_smt.f), [CM-6d](#cm-6_smt.d), [MA-3a](#ma-3_smt.a), [MA-4a](#ma-4_smt.a), [SC-5(3)(b)](#sc-5.3_smt.b), [SC-7a](#sc-7_smt.a), [SC-7(24)(b)](#sc-7.24_smt.b), [SC-18b](#sc-18_smt.b), [SC-43b](#sc-43_smt.b) ). Adjustments to levels of system monitoring are based on law enforcement information, intelligence information, or other sources of information. The legality of system monitoring activities is based on applicable laws, executive orders, directives, regulations, policies, standards, and guidelines.",
-          "score": 0.03159204125404358,
-          "similarity": 0.669,
-          "reranker_score": null
+          "score": 0.030886195600032806,
+          "reranker_score": 2.807480812072754
         },
         {
-          "id": "au-6_4",
-          "control_id": "AU-6(4)",
-          "title": "Audit Record Review, Analysis, and Reporting — Central Review and Analysis",
-          "category": "Audit and Accountability",
-          "content": "Provide and implement the capability to centrally review and analyze audit records from multiple components within the system.\n\nDiscussion: Automated mechanisms for centralized reviews and analyses include Security Information and Event Management products.",
-          "score": 0.0297619067132473,
-          "similarity": 0.6394,
-          "reranker_score": null
+          "id": "ir-4_14",
+          "control_id": "IR-4(14)",
+          "title": "Incident Handling — Security Operations Center",
+          "category": "Incident Response",
+          "content": "Establish and maintain a security operations center.\n\nDiscussion: A security operations center (SOC) is the focal point for security operations and computer network defense for an organization. The purpose of the SOC is to defend and monitor an organization’s systems and networks (i.e., cyber infrastructure) on an ongoing basis. The SOC is also responsible for detecting, analyzing, and responding to cybersecurity incidents in a timely manner. The organization staffs the SOC with skilled technical and operational personnel (e.g., security analysts, incident response personnel, systems security engineers) and implements a combination of technical, management, and operational controls (including monitoring, scanning, and forensics tools) to monitor, fuse, correlate, analyze, and respond to threat and security-relevant event data from multiple sources. These sources include perimeter defenses, network devices (e.g., routers, switches), and endpoint agent data feeds. The SOC provides a holistic situational awareness capability to help organizations determine the security posture of the system and organization. A SOC capability can be obtained in a variety of ways. Larger organizations may implement a dedicated SOC while smaller organizations may employ third-party organizations to provide such a capability.",
+          "score": 0.023489011451601982,
+          "reranker_score": 2.943596839904785
         },
         {
           "id": "au-6_5",
@@ -74,46 +94,132 @@
           "title": "Audit Record Review, Analysis, and Reporting — Integrated Analysis of Audit Records",
           "category": "Audit and Accountability",
           "content": "Integrate analysis of audit records with analysis of [Assignment: selection: vulnerability scanning information; performance data; system monitoring information; {{ insert: param, au-06.05_odp.02 }} ] to further enhance the ability to identify inappropriate or unusual activity.\n\nDiscussion: Integrated analysis of audit records does not require vulnerability scanning, the generation of performance data, or system monitoring. Rather, integrated analysis requires that the analysis of information generated by scanning, monitoring, or other data collection activities is integrated with the analysis of audit record information. Security Information and Event Management tools can facilitate audit record aggregation or consolidation from multiple system components as well as audit record correlation and analysis. The use of standardized audit record analysis scripts developed by organizations (with localized script adjustments, as necessary) provides more cost-effective approaches for analyzing audit record information collected. The correlation of audit record information with vulnerability scanning information is important in determining the veracity of vulnerability scans of the system and in correlating attack detection events with scanning results. Correlation with performance data can uncover denial-of-service attacks or other types of attacks that result in the unauthorized use of resources. Correlation with system monitoring information can assist in uncovering attacks and in better relating audit information to operational situations.",
-          "score": 0.03125763311982155,
-          "similarity": 0.6356,
-          "reranker_score": null
+          "score": 0.032786883413791656,
+          "reranker_score": 3.353363275527954
         },
         {
-          "id": "au-4",
-          "control_id": "AU-4",
-          "title": "Audit Log Storage Capacity",
+          "id": "au-6_4",
+          "control_id": "AU-6(4)",
+          "title": "Audit Record Review, Analysis, and Reporting — Central Review and Analysis",
           "category": "Audit and Accountability",
-          "content": "Allocate audit log storage capacity to accommodate [Assignment: audit log retention requirements].\n\nDiscussion: Organizations consider the types of audit logging to be performed and the audit log processing requirements when allocating audit log storage capacity. Allocating sufficient audit log storage capacity reduces the likelihood of such capacity being exceeded and resulting in the potential loss or reduction of audit logging capability.",
-          "score": 0.03181818127632141,
-          "similarity": 0.6336,
-          "reranker_score": null
+          "content": "Provide and implement the capability to centrally review and analyze audit records from multiple components within the system.\n\nDiscussion: Automated mechanisms for centralized reviews and analyses include Security Information and Event Management products.",
+          "score": 0.03151364624500275,
+          "reranker_score": 3.3235878944396973
         }
       ],
       "has_relevant_results": true
     },
+    "reranked": {
+      "question": "What policies relate to logging and monitoring?",
+      "plan": {
+        "original_query": "What policies relate to logging and monitoring?",
+        "interpretation": "User wants the NIST SP 800-53 controls and control families that govern system logging, audit records, continuous monitoring, and related monitoring and incident-detection activities.",
+        "intent": "policy_question",
+        "steps": [
+          {
+            "step_id": 1,
+            "search_query": "audit records, audit review analysis and reporting",
+            "rationale": "Locate AU-family controls that specify creation, content, protection, retention, review, and reporting of audit logs and audit records."
+          },
+          {
+            "step_id": 2,
+            "search_query": "information system monitoring, continuous monitoring",
+            "rationale": "Find controls about ongoing system monitoring, real-time detection, and continuous monitoring programs for security-relevant events and status."
+          },
+          {
+            "step_id": 3,
+            "search_query": "incident monitoring, incident response and analysis, event correlation",
+            "rationale": "Identify controls that connect monitoring to incident detection, analysis, reporting, and response (including correlation and escalation of monitored events)."
+          }
+        ]
+      },
+      "documents": [
+        {
+          "id": "au-6",
+          "control_id": "AU-6",
+          "title": "Audit Record Review, Analysis, and Reporting",
+          "category": "Audit and Accountability",
+          "content": "a. Review and analyze system audit records [Assignment: frequency] for indications of [Assignment: inappropriate or unusual activity] and the potential impact of the inappropriate or unusual activity;\nb. Report findings to [Assignment: personnel or roles] ; and\nc. Adjust the level of audit record review, analysis, and reporting within the system when there is a change in risk based on law enforcement information, intelligence information, or other credible sources of information.\n\nDiscussion: Audit record review, analysis, and reporting covers information security- and privacy-related logging performed by organizations, including logging that results from the monitoring of account usage, remote access, wireless connectivity, mobile device connection, configuration settings, system component inventory, use of maintenance tools and non-local maintenance, physical access, temperature and humidity, equipment delivery and removal, communications at system interfaces, and use of mobile code or Voice over Internet Protocol (VoIP). Findings can be reported to organizational entities that include the incident response team, help desk, and security or privacy offices. If organizations are prohibited from reviewing and analyzing audit records or unable to conduct such activities, the review or analysis may be carried out by other organizations granted such authority. The frequency, scope, and/or depth of the audit record review, analysis, and reporting may be adjusted to meet organizational needs based on new information received.",
+          "score": 0.03333333507180214,
+          "reranker_score": 3.4873526096343994
+        },
+        {
+          "id": "si-4",
+          "control_id": "SI-4",
+          "title": "System Monitoring",
+          "category": "System and Information Integrity",
+          "content": "a. Monitor the system to detect:\n1. Attacks and indicators of potential attacks in accordance with the following monitoring objectives: [Assignment: monitoring objectives] ; and\n2. Unauthorized local, network, and remote connections;\nb. Identify unauthorized use of the system through the following techniques and methods: [Assignment: techniques and methods];\nc. Invoke internal monitoring capabilities or deploy monitoring devices:\n1. Strategically within the system to collect organization-determined essential information; and\n2. At ad hoc locations within the system to track specific types of transactions of interest to the organization;\nd. Analyze detected events and anomalies;\ne. Adjust the level of system monitoring activity when there is a change in risk to organizational operations and assets, individuals, other organizations, or the Nation;\nf. Obtain legal opinion regarding system monitoring activities; and\ng. Provide [Assignment: system monitoring information] to [Assignment: personnel or roles] [Assignment: selection: as needed; {{ insert: param, si-04_odp.06 }} ].\n\nDiscussion: System monitoring includes external and internal monitoring. External monitoring includes the observation of events occurring at external interfaces to the system. Internal monitoring includes the observation of events occurring within the system. Organizations monitor systems by observing audit activities in real time or by observing other system aspects such as access patterns, characteristics of access, and other actions. The monitoring objectives guide and inform the determination of the events. System monitoring capabilities are achieved through a variety of tools and techniques, including intrusion detection and prevention systems, malicious code protection software, scanning tools, audit record monitoring software, and network monitoring software.\n\nDepending on the security architecture, the distribution and configuration of monitoring devices may impact throughput at key internal and external boundaries as well as at other locations across a network due to the introduction of network throughput latency. If throughput management is needed, such devices are strategically located and deployed as part of an established organization-wide security architecture. Strategic locations for monitoring devices include selected perimeter locations and near key servers and server farms that support critical applications. Monitoring devices are typically employed at the managed interfaces associated with controls [SC-7](#sc-7) and [AC-17](#ac-17) . The information collected is a function of the organizational monitoring objectives and the capability of systems to support such objectives. Specific types of transactions of interest include Hypertext Transfer Protocol (HTTP) traffic that bypasses HTTP proxies. System monitoring is an integral part of organizational continuous monitoring and incident response programs, and output from system monitoring serves as input to those programs. System monitoring requirements, including the need for specific types of system monitoring, may be referenced in other controls (e.g., [AC-2g](#ac-2_smt.g), [AC-2(7)](#ac-2.7), [AC-2(12)(a)](#ac-2.12_smt.a), [AC-17(1)](#ac-17.1), [AU-13](#au-13), [AU-13(1)](#au-13.1), [AU-13(2)](#au-13.2), [CM-3f](#cm-3_smt.f), [CM-6d](#cm-6_smt.d), [MA-3a](#ma-3_smt.a), [MA-4a](#ma-4_smt.a), [SC-5(3)(b)](#sc-5.3_smt.b), [SC-7a](#sc-7_smt.a), [SC-7(24)(b)](#sc-7.24_smt.b), [SC-18b](#sc-18_smt.b), [SC-43b](#sc-43_smt.b) ). Adjustments to levels of system monitoring are based on law enforcement information, intelligence information, or other sources of information. The legality of system monitoring activities is based on applicable laws, executive orders, directives, regulations, policies, standards, and guidelines.",
+          "score": 0.030886195600032806,
+          "reranker_score": 2.807480812072754
+        },
+        {
+          "id": "au-6_5",
+          "control_id": "AU-6(5)",
+          "title": "Audit Record Review, Analysis, and Reporting — Integrated Analysis of Audit Records",
+          "category": "Audit and Accountability",
+          "content": "Integrate analysis of audit records with analysis of [Assignment: selection: vulnerability scanning information; performance data; system monitoring information; {{ insert: param, au-06.05_odp.02 }} ] to further enhance the ability to identify inappropriate or unusual activity.\n\nDiscussion: Integrated analysis of audit records does not require vulnerability scanning, the generation of performance data, or system monitoring. Rather, integrated analysis requires that the analysis of information generated by scanning, monitoring, or other data collection activities is integrated with the analysis of audit record information. Security Information and Event Management tools can facilitate audit record aggregation or consolidation from multiple system components as well as audit record correlation and analysis. The use of standardized audit record analysis scripts developed by organizations (with localized script adjustments, as necessary) provides more cost-effective approaches for analyzing audit record information collected. The correlation of audit record information with vulnerability scanning information is important in determining the veracity of vulnerability scans of the system and in correlating attack detection events with scanning results. Correlation with performance data can uncover denial-of-service attacks or other types of attacks that result in the unauthorized use of resources. Correlation with system monitoring information can assist in uncovering attacks and in better relating audit information to operational situations.",
+          "score": 0.032786883413791656,
+          "reranker_score": 3.353363275527954
+        },
+        {
+          "id": "au-6_4",
+          "control_id": "AU-6(4)",
+          "title": "Audit Record Review, Analysis, and Reporting — Central Review and Analysis",
+          "category": "Audit and Accountability",
+          "content": "Provide and implement the capability to centrally review and analyze audit records from multiple components within the system.\n\nDiscussion: Automated mechanisms for centralized reviews and analyses include Security Information and Event Management products.",
+          "score": 0.03151364624500275,
+          "reranker_score": 3.3235878944396973
+        },
+        {
+          "id": "ir-4_14",
+          "control_id": "IR-4(14)",
+          "title": "Incident Handling — Security Operations Center",
+          "category": "Incident Response",
+          "content": "Establish and maintain a security operations center.\n\nDiscussion: A security operations center (SOC) is the focal point for security operations and computer network defense for an organization. The purpose of the SOC is to defend and monitor an organization’s systems and networks (i.e., cyber infrastructure) on an ongoing basis. The SOC is also responsible for detecting, analyzing, and responding to cybersecurity incidents in a timely manner. The organization staffs the SOC with skilled technical and operational personnel (e.g., security analysts, incident response personnel, systems security engineers) and implements a combination of technical, management, and operational controls (including monitoring, scanning, and forensics tools) to monitor, fuse, correlate, analyze, and respond to threat and security-relevant event data from multiple sources. These sources include perimeter defenses, network devices (e.g., routers, switches), and endpoint agent data feeds. The SOC provides a holistic situational awareness capability to help organizations determine the security posture of the system and organization. A SOC capability can be obtained in a variety of ways. Larger organizations may implement a dedicated SOC while smaller organizations may employ third-party organizations to provide such a capability.",
+          "score": 0.023489011451601982,
+          "reranker_score": 2.943596839904785
+        }
+      ],
+      "relevance_scores": {
+        "AU-6": 1.0,
+        "SI-4": 1.0,
+        "IR-4(14)": 0.6,
+        "AU-6(5)": 0.95,
+        "AU-6(4)": 0.95
+      }
+    },
+    "faithfulness": [
+      {
+        "faithfulness_score": 1.0,
+        "unsupported_claims": [],
+        "reasoning": "All factual statements in the candidate answer are directly stated in or plainly entailed by the provided control texts (AU-6, AU-6(4), AU-6(5), SI-4, IR-4(14)), including the noted placeholders for organizational assignments."
+      }
+    ],
     "answer": {
-      "answer": "Relevant policies from the retrieved controls that address logging and monitoring:\n\n- Audit record review, analysis, and reporting: require review and analysis of system audit records at an assigned frequency for indications of inappropriate or unusual activity, reporting findings to assigned personnel/roles, and adjusting review/analysis levels when risk changes (AU-6).\n\n- Centralized audit review and analysis: require capability to centrally review and analyze audit records from multiple system components (AU-6(4)).\n\n- Integrated analysis: require integrating audit record analysis with vulnerability scanning information, performance data, or system monitoring information to improve detection of inappropriate or unusual activity (AU-6(5)).\n\n- Audit log storage capacity: require allocation of audit log storage capacity to meet audit log retention requirements so logging capability is not lost or reduced (AU-4).\n\n- System monitoring: require monitoring to detect attacks and indicators of attack, unauthorized connections, identification of unauthorized system use (using assigned techniques), invoking internal or deployed monitoring devices (strategically and ad hoc), analyzing detected events and anomalies, adjusting monitoring levels when risk changes, obtaining legal opinion on monitoring activities, and providing monitoring information to assigned personnel/roles (SI-4).",
+      "answer": "Relevant policies/controls for logging and monitoring:\n\n- AU-6 — Audit Record Review, Analysis, and Reporting: requires organizations to review and analyze system audit records at assigned frequencies for indications of inappropriate or unusual activity, report findings to designated personnel/roles, and adjust audit review/analysis/reporting when risk changes (e.g., based on law enforcement or intelligence) (AU-6).\n\n- AU-6(4) — Central Review and Analysis: requires capability to centrally review and analyze audit records from multiple system components (e.g., via automated tools such as SIEMs) (AU-6(4)).\n\n- AU-6(5) — Integrated Analysis of Audit Records: requires integrating audit-record analysis with other information (selected vulnerability scanning, performance data, system monitoring information) to improve identification of inappropriate or unusual activity and notes use of SIEMs and correlation techniques (AU-6(5)).\n\n- SI-4 — System Monitoring: requires active monitoring to detect attacks and indicators of attacks, unauthorized local/network/remote connections; identification of unauthorized use via assigned techniques; strategic/ad hoc deployment of monitoring capabilities; analysis of detected events/anomalies; adjustment of monitoring levels when risk changes; obtaining legal opinion for monitoring activities; and providing monitoring information to assigned personnel/roles (SI-4).\n\n- IR-4(14) — Security Operations Center (SOC): directs establishing/maintaining a SOC as the focal point for continuous defense, monitoring, detection, analysis, and response; staffing and tool usage (monitoring, scanning, forensics) and fusion/correlation of data from multiple sources (IR-4(14)).\n\nScope/limits: The controls specify required activities and capabilities but leave specifics such as frequencies, personnel assignments, and monitoring objectives as organizational or placeholder assignments (i.e., [Assignment:] elements) — those details must be defined by the organization (AU-6; SI-4).",
       "citations": [
         "AU-6",
         "AU-6(4)",
         "AU-6(5)",
-        "AU-4",
-        "SI-4"
+        "SI-4",
+        "IR-4(14)"
       ],
       "confidence": "high",
       "grounded": true
     },
-    "duration_ms": 24217,
+    "fallback_reason": null,
+    "duration_ms": 38946,
     "error": null
   },
   "deterministic_checks": {
     "citations_valid": true,
     "num_citations": 5,
-    "token_overlap": 0.828
+    "token_overlap": 0.757,
+    "grounded_answer_has_citations": true
   },
   "llm_judge": {
     "retrieval_relevance": 5,
     "groundedness": 5,
-    "justification": "The retrieved controls (AU-6, AU-6(4), AU-6(5), AU-4, SI-4) directly address audit logging, centralized/integrated analysis, storage capacity, and system monitoring, and the final answer accurately paraphrases those controls with clear citations."
+    "justification": "The retrieved controls (AU-6 and its enhancements, SI-4, and IR-4(14)) directly address audit/log review, centralized and integrated analysis, active system monitoring, and SOC responsibilities, and the final answer accurately summarizes those controls with claims traceable to the retrieved excerpts."
   }
 }

@@ -7,8 +7,9 @@ RESOURCE_GROUP="${RESOURCE_GROUP:-rg-policy-qa}"
 LOCATION="${LOCATION:-eastus2}"
 AOAI_NAME="${AOAI_NAME:-aoai-policy-qa-$RANDOM}"
 SEARCH_NAME="${SEARCH_NAME:-search-policy-qa-$RANDOM}"
-SEARCH_SKU="${SEARCH_SKU:-free}"           # set SEARCH_SKU=basic to enable the semantic ranker
-SEARCH_LOCATION="${SEARCH_LOCATION:-australiaeast}"  # index data lives here; free-tier capacity varies by region
+SEARCH_SKU="${SEARCH_SKU:-basic}"
+SEMANTIC_SEARCH_PLAN="${SEMANTIC_SEARCH_PLAN:-free}" # first 1,000 semantic queries/month
+SEARCH_LOCATION="${SEARCH_LOCATION:-australiaeast}"
 CHAT_MODEL="${CHAT_MODEL:-gpt-5-mini}"
 CHAT_MODEL_VERSION="${CHAT_MODEL_VERSION:-2025-08-07}"
 
@@ -19,7 +20,10 @@ az group create --name "$RESOURCE_GROUP" --location "$LOCATION" --output none
 existing_aoai=$(az cognitiveservices account list -g "$RESOURCE_GROUP" \
   --query "[?kind=='OpenAI'] | [0].name" -o tsv)
 if [[ -n "$existing_aoai" ]]; then AOAI_NAME="$existing_aoai"; fi
-existing_search=$(az search service list -g "$RESOURCE_GROUP" --query "[0].name" -o tsv)
+# Free services can't be upgraded to Basic. Reuse only a service whose SKU
+# matches the requested tier; otherwise create a new service.
+existing_search=$(az search service list -g "$RESOURCE_GROUP" \
+  --query "[?sku.name=='$SEARCH_SKU'] | [0].name" -o tsv)
 if [[ -n "$existing_search" ]]; then SEARCH_NAME="$existing_search"; fi
 
 echo ">> Azure OpenAI: $AOAI_NAME"
@@ -44,7 +48,8 @@ az cognitiveservices account deployment create \
 echo ">> Azure AI Search: $SEARCH_NAME (sku: $SEARCH_SKU, $SEARCH_LOCATION)"
 az search service create \
   --name "$SEARCH_NAME" --resource-group "$RESOURCE_GROUP" \
-  --sku "$SEARCH_SKU" --location "$SEARCH_LOCATION" --output none || echo "   (service exists)"
+  --sku "$SEARCH_SKU" --location "$SEARCH_LOCATION" \
+  --semantic-search "$SEMANTIC_SEARCH_PLAN" --output none || echo "   (service exists)"
 
 AOAI_ENDPOINT=$(az cognitiveservices account show -n "$AOAI_NAME" -g "$RESOURCE_GROUP" \
   --query "properties.endpoint" -o tsv)
@@ -55,7 +60,7 @@ SEARCH_KEY=$(az search admin-key show --service-name "$SEARCH_NAME" -g "$RESOURC
 
 cat <<EOF
 
->> Done. Add these values to your .env:
+>> Done. Add these values to your local .env only (do not commit it):
 
 AZURE_OPENAI_ENDPOINT=$AOAI_ENDPOINT
 AZURE_OPENAI_API_KEY=$AOAI_KEY
@@ -63,4 +68,5 @@ AZURE_OPENAI_CHAT_DEPLOYMENT=$CHAT_MODEL
 AZURE_OPENAI_EMBEDDING_DEPLOYMENT=text-embedding-3-small
 AZURE_SEARCH_ENDPOINT=https://$SEARCH_NAME.search.windows.net
 AZURE_SEARCH_API_KEY=$SEARCH_KEY
+USE_SEMANTIC_RANKER=true
 EOF
