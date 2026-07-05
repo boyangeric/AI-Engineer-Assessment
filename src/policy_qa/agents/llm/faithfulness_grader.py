@@ -8,12 +8,12 @@ from typing import Any
 
 from agent_framework import Executor, WorkflowContext, handler
 
-from ..config import Settings
-from ..utils.logging_setup import log_event
-from ..schemas import DraftAnswer, FaithfulnessGrade, FaithfulnessResult, FinalAnswer
-from ..tracing import TraceState
-from .agent_factory import parse_structured
-from .prompt_blocks import build_faithfulness_block
+from ...config import Settings
+from ...utils.logging_setup import log_event
+from ...schemas import DraftAnswer, FaithfulnessGrade, FaithfulnessResult, FinalAnswer
+from ...tracing import TraceState
+from ..shared.agent_factory import parse_structured
+from ..shared.prompt_blocks import build_faithfulness_block
 
 logger = logging.getLogger(__name__)
 

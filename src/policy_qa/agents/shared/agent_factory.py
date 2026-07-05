@@ -18,7 +18,7 @@ from agent_framework.openai import (
 )
 from pydantic import BaseModel, ValidationError
 
-from ..config import Settings
+from ...config import Settings
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
 

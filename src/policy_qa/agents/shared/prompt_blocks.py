@@ -7,8 +7,8 @@ lives in exactly one place.
 
 from __future__ import annotations
 
-from ..schemas import RerankedContext, RetrievedDocument
-from ..utils.text import escape_untrusted, wrap_untrusted_document
+from ...schemas import RerankedContext, RetrievedDocument
+from ...utils.text import escape_untrusted, wrap_untrusted_document
 
 
 def build_question_block(question: str) -> str:

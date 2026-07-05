@@ -19,17 +19,17 @@ from typing import Any
 
 from agent_framework import Executor, WorkflowContext, handler
 
-from ..utils.logging_setup import log_event
-from ..schemas import (
+from ...utils.logging_setup import log_event
+from ...schemas import (
     DraftAnswer,
     FinalAnswer,
     RerankedContext,
     make_fallback_answer,
     validate_citations,
 )
-from ..tracing import TraceState
-from .agent_factory import parse_structured
-from .prompt_blocks import build_context_block
+from ...tracing import TraceState
+from ..shared.agent_factory import parse_structured
+from ..shared.prompt_blocks import build_context_block
 
 logger = logging.getLogger(__name__)
 

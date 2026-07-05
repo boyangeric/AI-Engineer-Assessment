@@ -1,6 +1,6 @@
 """Tests for the indirect prompt-injection defence (XML chunk delimiting)."""
 
-from policy_qa.agents.prompt_blocks import (
+from policy_qa.agents.shared.prompt_blocks import (
     build_evidence_block,
     build_faithfulness_block,
     build_grading_block,

@@ -296,3 +296,24 @@ for the sample evaluation is small. When finished:
   sustained usage requires the `standard` semantic billing plan.
 - The corpus is a public catalog standing in for private enterprise policy; swapping
   the ingestion module is the only change needed for a different corpus.
+
+## Future work
+
+- Add a dedicated conversational route for greetings, follow-up questions and
+  limited policy-related chit-chat, while keeping factual policy answers grounded
+  in retrieved evidence.
+- Build a labelled query-to-control relevance dataset and tune the semantic
+  reranker, context-relevance and faithfulness thresholds against precision,
+  recall and fallback rates instead of relying on manually selected defaults.
+- Introduce Corrective RAG (CRAG): assess retrieval quality, rewrite weak queries,
+  retry retrieval and use a controlled secondary source before returning the safe
+  fallback.
+- Improve retrieval with policy-aware query expansion, control-family filters and
+  offline comparison of hybrid, semantic and vector-only search configurations.
+- Add multi-turn session context with explicit limits so follow-up questions can
+  resolve prior references without allowing conversation history to override
+  system instructions or retrieved policy text.
+- Use a separate model or human-reviewed benchmark for evaluation to reduce
+  self-grading bias, and track quality, latency and cost regressions in CI.
+- Add an authenticated API layer, container deployment, managed identity,
+  telemetry dashboards and automated deployment checks for production operation.

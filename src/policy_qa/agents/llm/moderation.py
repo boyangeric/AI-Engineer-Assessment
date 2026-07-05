@@ -20,10 +20,10 @@ from agent_framework.exceptions import (
     ChatClientContentFilterException,
 )
 
-from ..utils.logging_setup import log_event
-from ..schemas import ContentModerationResponse, ModerationVerdict
-from ..tracing import TraceState
-from .agent_factory import parse_structured
+from ...utils.logging_setup import log_event
+from ...schemas import ContentModerationResponse, ModerationVerdict
+from ...tracing import TraceState
+from ..shared.agent_factory import parse_structured
 
 logger = logging.getLogger(__name__)
 
