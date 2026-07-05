@@ -13,7 +13,7 @@ from ..utils.logging_setup import log_event
 from ..schemas import DraftAnswer, FaithfulnessGrade, FaithfulnessResult, FinalAnswer
 from ..tracing import TraceState
 from .agent_factory import parse_structured
-from .prompt_blocks import build_evidence_block
+from .prompt_blocks import build_faithfulness_block
 
 logger = logging.getLogger(__name__)
 
@@ -34,10 +34,7 @@ class FaithfulnessGraderExecutor(Executor):
         ctx: WorkflowContext[FaithfulnessResult, FinalAnswer],
     ) -> None:
         started = time.perf_counter()
-        prompt = (
-            f"{build_evidence_block(draft.context.documents)}\n\n"
-            f"Candidate answer:\n{draft.answer.answer}"
-        )
+        prompt = build_faithfulness_block(draft.context, draft.answer.answer)
         response = await self._agent.run(prompt)
         grade = parse_structured(response, FaithfulnessGrade)
         result = FaithfulnessResult(draft=draft, **grade.model_dump())

@@ -189,15 +189,21 @@ def _draft() -> DraftAnswer:
 
 def test_faithfulness_gate_yields_passing_answer():
     class _PassingGrader:
+        prompt = ""
+
         async def run(self, *args, **kwargs):
+            self.prompt = args[0]
             return SimpleNamespace(value=FaithfulnessGrade(faithfulness_score=0.9))
 
-    executor = FaithfulnessGraderExecutor(_PassingGrader(), _settings(), trace=TraceState())
+    grader = _PassingGrader()
+    executor = FaithfulnessGraderExecutor(grader, _settings(), trace=TraceState())
     ctx = CapturingContext()
     grade = inspect.unwrap(FaithfulnessGraderExecutor.grade)
     asyncio.run(grade(executor, _draft(), ctx))
     assert ctx.outputs[0].grounded is True
     assert ctx.messages == []
+    assert "<user_question>q</user_question>" in grader.prompt
+    assert "<candidate_answer>Apply AC-2.</candidate_answer>" in grader.prompt
 
 
 def test_faithfulness_gate_routes_failure_to_fallback():

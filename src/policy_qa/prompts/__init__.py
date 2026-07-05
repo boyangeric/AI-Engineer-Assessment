@@ -27,8 +27,8 @@ RUNTIME_VERSIONS: dict[str, int] = {
     "moderation": 1,
     "planner": 1,
     "context_relevance_grader": 1,
-    "responder": 1,
-    "faithfulness_grader": 1,
+    "responder": 2,
+    "faithfulness_grader": 2,
 }
 
 # Prompts used only by the evaluation harness (evaluator.py), never at runtime.
