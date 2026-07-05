@@ -22,10 +22,21 @@ from ..config import Settings
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
 
-DETERMINISTIC_OPTIONS: OpenAIChatCompletionOptions[Any] = {"seed": 42}
+DETERMINISTIC_OPTIONS: OpenAIChatCompletionOptions[Any] = {
+    "seed": 42,
+    "verbosity": "low",
+}
 
 
-def make_chat_client(settings: Settings) -> OpenAIChatCompletionClient:
+def build_chat_client(settings: Settings) -> OpenAIChatCompletionClient:
+    """Build the shared Azure OpenAI chat client bound to the pinned deployment.
+    Args:
+        settings: Configuration holding the Azure OpenAI endpoint, API key,
+            API version, and the pinned chat deployment name.
+
+    Returns:
+        An `OpenAIChatCompletionClient` ready to back one or more agents.
+    """
     return OpenAIChatCompletionClient(
         model=settings.chat_deployment,
         api_key=settings.aoai_api_key,
@@ -34,7 +45,7 @@ def make_chat_client(settings: Settings) -> OpenAIChatCompletionClient:
     )
 
 
-def make_agent(
+def build_deterministic_agent(
     client: OpenAIChatCompletionClient,
     *,
     name: str,
@@ -42,6 +53,22 @@ def make_agent(
     response_format: type[BaseModel] | None = None,
     tools: Sequence[Callable[..., Any]] | None = None,
 ) -> Agent:
+    """Build a framework Agent pre-configured with the deterministic options.
+
+    Every agent in the pipeline is created through this factory so they all
+    share the same reproducibility levers (fixed seed, pinned deployment via
+    `client`, fixed prompt) rather than each call site choosing its own.
+
+    Args:
+        client: Chat client bound to the pinned Azure OpenAI deployment.
+        name: Agent name used in framework traces and logs.
+        instructions: System prompt (a versioned prompt from `policy_qa.prompts`).
+        response_format: Optional Pydantic model enforcing schema-constrained structured output.
+        tools: Optional callables the agent may invoke (e.g. the search tool).
+
+    Returns:
+        A configured `agent_framework.Agent` ready to `run()`.
+    """
     options: OpenAIChatCompletionOptions[Any] = DETERMINISTIC_OPTIONS.copy()
     if response_format is not None:
         options["response_format"] = response_format

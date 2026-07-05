@@ -1,0 +1,60 @@
+"""Single post-generation faithfulness gate."""
+
+from __future__ import annotations
+
+import logging
+import time
+from typing import Any
+
+from agent_framework import Executor, WorkflowContext, handler
+
+from ..config import Settings
+from ..logging_setup import log_event
+from ..schemas import DraftAnswer, FaithfulnessGrade, FaithfulnessResult, FinalAnswer
+from .agent_factory import parse_structured
+from .answer_draft_generation import build_evidence_block
+
+logger = logging.getLogger(__name__)
+
+
+class HallucinationGraderExecutor(Executor):
+    """Workflow node: DraftAnswer in, FaithfulnessResult out (routing on edges)."""
+
+    def __init__(self, agent: Any, settings: Settings, trace: dict[str, Any]):
+        super().__init__(id="hallucination_grader")
+        self._agent = agent
+        self._threshold = settings.hallucination_score_threshold
+        self._trace = trace
+
+    @handler
+    async def grade(
+        self,
+        draft: DraftAnswer,
+        ctx: WorkflowContext[FaithfulnessResult, FinalAnswer],
+    ) -> None:
+        started = time.perf_counter()
+        prompt = (
+            f"{build_evidence_block(draft.context.documents)}\n\n"
+            f"Candidate answer:\n{draft.answer.answer}"
+        )
+        response = await self._agent.run(prompt)
+        grade = parse_structured(response, FaithfulnessGrade)
+        result = FaithfulnessResult(draft=draft, **grade.model_dump())
+        latency_ms = round((time.perf_counter() - started) * 1000)
+        self._trace.setdefault("faithfulness", []).append(grade.model_dump())
+        log_event(
+            logger,
+            "hallucination grading completed",
+            agent="hallucination_grader",
+            input={"answer_chars": len(draft.answer.answer)},
+            output={
+                **grade.model_dump(),
+                "passed": grade.faithfulness_score >= self._threshold,
+            },
+            latency_ms=latency_ms,
+        )
+        if grade.faithfulness_score >= self._threshold:
+            self._trace["answer"] = draft.answer
+            await ctx.yield_output(draft.answer)
+            return
+        await ctx.send_message(result)

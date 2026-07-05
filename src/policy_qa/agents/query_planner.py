@@ -1,4 +1,4 @@
-"""Planner Agent: decomposes the user question into structured search steps."""
+"""Planner Agent: interpret and decompose a moderated user question."""
 
 from __future__ import annotations
 
@@ -9,21 +9,10 @@ from typing import Any
 from agent_framework import Executor, WorkflowContext, handler
 
 from ..logging_setup import log_event
-from ..schemas import QueryPlan
-from .factory import parse_structured
+from ..schemas import ContentModerationResponse, QueryPlan
+from .agent_factory import parse_structured
 
 logger = logging.getLogger(__name__)
-
-PLANNER_INSTRUCTIONS = """\
-You are a query planner for an enterprise security policy question-answering system.
-The knowledge base is the NIST SP 800-53 Rev 5 security control catalog indexed in
-Azure AI Search (fields: control id, title, description, control family).
-
-Decompose the user's question into 1-3 focused search steps. Each step must contain
-a short keyword-style search query targeting security controls, plus a one-sentence
-rationale. Use multiple steps only when the question genuinely spans distinct topics.
-Do not answer the question yourself.
-"""
 
 
 class PlannerExecutor(Executor):
@@ -34,8 +23,7 @@ class PlannerExecutor(Executor):
         self._agent = agent
         self._trace = trace
 
-    @handler
-    async def plan(self, query: str, ctx: WorkflowContext[QueryPlan]) -> None:
+    async def _plan(self, query: str, ctx: WorkflowContext[QueryPlan]) -> None:
         started = time.perf_counter()
         response = await self._agent.run(query)
         plan = parse_structured(response, QueryPlan)
@@ -51,3 +39,9 @@ class PlannerExecutor(Executor):
             latency_ms=latency_ms,
         )
         await ctx.send_message(plan)
+
+    @handler
+    async def plan(
+        self, moderated: ContentModerationResponse, ctx: WorkflowContext[QueryPlan]
+    ) -> None:
+        await self._plan(moderated.question, ctx)
