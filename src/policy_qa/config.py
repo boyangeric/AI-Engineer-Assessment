@@ -48,6 +48,8 @@ class Settings:
 
     # Misc
     log_level: str = "INFO"
+    log_file: Path = field(default=PROJECT_ROOT / "logs" / "policy-qa.jsonl")
+    log_to_console: bool = False
     embedding_dimensions: int = field(default=1536, init=True)
 
     @classmethod
@@ -70,6 +72,13 @@ class Settings:
             use_semantic_ranker=os.environ.get("USE_SEMANTIC_RANKER", "false").lower()
             in ("1", "true", "yes"),
             log_level=os.environ.get("LOG_LEVEL", "INFO").upper(),
+            log_file=Path(
+                os.environ.get(
+                    "LOG_FILE", str(PROJECT_ROOT / "logs" / "policy-qa.jsonl")
+                )
+            ),
+            log_to_console=os.environ.get("LOG_TO_CONSOLE", "false").lower()
+            in ("1", "true", "yes"),
         )
         if missing:
             raise ConfigError(

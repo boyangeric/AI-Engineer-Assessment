@@ -15,7 +15,11 @@ app = typer.Typer(help="Multi-agent security policy Q&A on Azure AI.", no_args_i
 
 def _settings() -> Settings:
     settings = Settings.from_env()
-    setup_logging(settings.log_level)
+    setup_logging(
+        settings.log_level,
+        log_file=settings.log_file,
+        log_to_console=settings.log_to_console,
+    )
     return settings
 
 

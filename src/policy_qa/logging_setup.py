@@ -10,9 +10,12 @@ from __future__ import annotations
 import contextvars
 import json
 import logging
+from logging.handlers import RotatingFileHandler
 import sys
 import uuid
+import warnings
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 correlation_id_var: contextvars.ContextVar[str] = contextvars.ContextVar(
@@ -43,14 +46,48 @@ class JsonFormatter(logging.Formatter):
         return json.dumps(payload, ensure_ascii=False, default=str)
 
 
-def setup_logging(level: str = "INFO") -> None:
-    handler = logging.StreamHandler(sys.stderr)
-    handler.setFormatter(JsonFormatter())
+def setup_logging(
+    level: str = "INFO",
+    log_file: Path | str = "logs/policy-qa.jsonl",
+    log_to_console: bool = False,
+) -> None:
+    """Write structured logs to a rotating JSONL file.
+
+    Console logging is opt-in so normal CLI output stays human-readable while
+    the complete input/output audit trail remains available for inspection.
+    """
+    # Agent Framework currently emits these two experimental-feature warnings
+    # on import. They are dependency status notices, not actionable runtime
+    # warnings for CLI users. Keep every other warning visible.
+    warnings.filterwarnings(
+        "ignore",
+        message=r"\[(SKILLS|HARNESS)\].*experimental.*",
+        category=Warning,
+        module=r"agent_framework\..*",
+    )
+
+    formatter = JsonFormatter()
+    path = Path(log_file)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    file_handler = RotatingFileHandler(
+        path,
+        maxBytes=5 * 1024 * 1024,
+        backupCount=3,
+        encoding="utf-8",
+    )
+    file_handler.setFormatter(formatter)
+
     root = logging.getLogger()
     root.handlers.clear()
-    root.addHandler(handler)
+    root.addHandler(file_handler)
+    if log_to_console:
+        console_handler = logging.StreamHandler(sys.stderr)
+        console_handler.setFormatter(formatter)
+        root.addHandler(console_handler)
     root.setLevel(level)
-    # Azure SDK HTTP logging is very chatty at INFO.
+    # Dependency logs are noisy; application-level agent input/output events
+    # already capture the useful workflow audit trail.
+    logging.getLogger("agent_framework").setLevel(logging.WARNING)
     logging.getLogger("azure").setLevel(logging.WARNING)
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("openai").setLevel(logging.WARNING)
