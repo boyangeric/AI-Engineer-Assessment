@@ -42,39 +42,42 @@ ingested, each with a title, description and category as required.
 
 ## Prerequisites
 
-- Python 3.10+
+- Python 3.11+
 - An Azure subscription
-- Azure CLI (`brew install azure-cli`) for scripted provisioning (or use the portal)
 
 ## Setup
 
-### 1. Provision Azure resources
+### 1. Create the Azure resources
 
-```bash
-az login
-./scripts/provision.sh          # creates: resource group, Azure OpenAI
-                                # (gpt-5-mini + text-embedding-3-small), Azure AI Search
-```
+Create the following resources in your own Azure subscription, preferably in a
+dedicated resource group so costs and cleanup remain isolated:
 
-The script prints the endpoint/key values to put in `.env`. Portal alternative: create
-an Azure OpenAI resource with the two deployments above and an Azure AI
-Search service, then copy the endpoints and keys.
+| Resource | Required configuration |
+|---|---|
+| Azure OpenAI | Deploy `gpt-5-mini` for chat and `text-embedding-3-small` for 1,536-dimension embeddings |
+| Azure AI Search | Basic tier, with the semantic ranker's free plan enabled; the application creates the `security-policies` index during ingestion |
 
-> **Semantic search is enabled by default.** Provisioning creates a Basic Azure AI
-> Search service with the semantic ranker's free usage plan (1,000 semantic queries
-> per month), and `.env.example` sets `USE_SEMANTIC_RANKER=true`. Each planner step
-> runs a hybrid BM25 + vector query, and Azure applies its L2 semantic reranker to
-> that initial result set. Set `SEMANTIC_SEARCH_PLAN=standard` only if pay-as-you-go
-> semantic queries are needed beyond the monthly free allowance. If semantic ranking
-> is unavailable, the search client logs the condition and retries as plain hybrid
+Model availability and supported versions vary by Azure region. Deployment names
+may differ, provided the names are copied into `.env`.
+
+From the Azure portal, collect the Azure OpenAI endpoint and key, and the Azure AI
+Search endpoint and admin key. Copy `.env.example` to `.env` and supply those
+values locally. Do not commit the resulting file.
+
+> **Semantic search is enabled by default.** `.env.example` sets
+> `USE_SEMANTIC_RANKER=true`. Each planner step runs a hybrid BM25 + vector query,
+> and Azure applies its L2 semantic reranker to that initial result set. The free
+> semantic plan provides 1,000 semantic queries per month; select the standard plan
+> in Azure if sustained pay-as-you-go usage is required. If semantic ranking is
+> unavailable, the search client logs the condition and retries as plain hybrid
 > search; set `USE_SEMANTIC_RANKER=false` to select that mode explicitly.
 
 ### 2. Install and configure
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
-pip install -e .
-cp .env.example .env            # fill in the values printed by provision.sh
+pip install -e ".[dev]"         # installs the application and test dependencies
+cp .env.example .env            # fill in your Azure endpoints and keys
 ```
 
 `.env.example` is a template only. Real Azure credentials stay in local
@@ -276,14 +279,16 @@ src/policy_qa/
 └── cli.py                        # policy-qa ingest | ask | interactive | evaluate
 ```
 
-## Costs and teardown
+## Costs and infrastructure lifecycle
 
-The Basic Search service is billable while provisioned; model and embedding usage
-for the sample evaluation is small. When finished:
+Azure AI Search Basic is billable while provisioned; chat and embedding usage are
+also metered. Review the current Azure pricing before creating resources. When
+finished, delete the dedicated assessment resource group through the Azure portal
+and verify that no resources remain.
 
-```bash
-./scripts/teardown.sh
-```
+Production infrastructure should be managed declaratively with Terraform or
+Bicep through a reviewed CI/CD workflow. Imperative provisioning and destructive
+teardown scripts are intentionally not included in this assessment repository.
 
 ## Limitations
 
@@ -316,4 +321,5 @@ for the sample evaluation is small. When finished:
 - Use a separate model or human-reviewed benchmark for evaluation to reduce
   self-grading bias, and track quality, latency and cost regressions in CI.
 - Add an authenticated API layer, container deployment, managed identity,
-  telemetry dashboards and automated deployment checks for production operation.
+  telemetry dashboards, Terraform or Bicep infrastructure, and automated deployment
+  checks for production operation.

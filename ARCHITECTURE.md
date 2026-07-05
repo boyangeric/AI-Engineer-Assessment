@@ -122,5 +122,7 @@ failure is converted to a safe typed response.
 
 Configuration is environment-driven, including deployments, index name, top-k,
 the native semantic reranker threshold, 0–1 grader thresholds, semantic ranker
-use, workflow bounds, and logging. Provision and teardown scripts support a
-reproducible personal Azure deployment.
+use, workflow bounds, and logging. Production infrastructure should be managed
+declaratively with Terraform or Bicep through a reviewed CI/CD workflow; this
+assessment documents the required Azure resources without including imperative
+provisioning or destructive teardown scripts.
